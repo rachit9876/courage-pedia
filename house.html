@@ -16,24 +16,30 @@
         .accent-text,.horror-accent-text,.love-accent-text{color:#fdc3ed}
         .nav-item.active{border-bottom:2px solid #fdc3ed;color:#fdc3ed}
         
-        @keyframes characterBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        .character-bounce { animation: characterBounce 2s infinite ease-in-out; }
-        
-        @keyframes selectedRoom {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        .room-selected { animation: selectedRoom 0.5s ease; }
+
+        .room-selected { border-color: #fdc3ed; }
         
         @keyframes slideUp {
             from { transform: translateY(100%); }
             to { transform: translateY(0); }
         }
+        @keyframes slideDown {
+            from { transform: translateY(0); }
+            to { transform: translateY(100%); }
+        }
         .slide-up { animation: slideUp 0.3s forwards; }
+        .slide-down { animation: slideDown 0.3s forwards; }
+        
+        /* Fix for mobile info panel to ensure it covers the entire bottom area */
+        #mobile-info-panel {
+            padding-bottom: env(safe-area-inset-bottom, 3rem); /* Increased padding for bezels */
+            min-height: 12rem; /* Ensure enough height to prevent content showing through */
+        }
+        
+        /* Add extra space at the bottom of mobile info content for phones with bezels */
+        #mobile-room-info {
+            padding-bottom: 2rem; /* Add two blank lines worth of space */
+        }
         
         @media(max-width:768px){
             .text-3xl{font-size:1.5rem}
@@ -51,9 +57,7 @@
     <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/30 border-b border-white/10 flex items-center justify-between px-4 py-2">
         <img src="logo.svg" alt="CN Logo" class="h-8 sm:h-10 w-auto flex-shrink-0" />
         
-        <div class="flex-1 max-w-xs sm:max-w-sm md:max-w-md mx-2 sm:mx-4">
-            <input id="headerSearch" type="text" placeholder="Search..." class="w-full px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full bg-card placeholder-gray-400 border border-gray-600 focus:outline-none focus:border-gray-400 text-xs sm:text-sm" style="color:#fdc3ed;">
-        </div>
+
         
         <div class="flex items-center flex-shrink-0 gap-2" style="color:#fdc3ed;">
             <a href="#" style="background-color:#fdc3ed;" class="hover:opacity-80 px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-xs sm:text-sm font-semibold text-black">@rachit.zip</a>
@@ -91,7 +95,6 @@
                         <div class="grid grid-cols-1">
                             <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-pink-100 to-pink-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
                                  data-room="computer-room">
-                                <div class="character-bounce absolute top-2 left-2 w-6 h-6 bg-courage-pink rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md">C</div>
                                 <span class="relative z-20 text-gray-800 font-semibold">Computer Room</span>
                             </div>
                         </div>
@@ -103,8 +106,6 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
                                  data-room="master-bedroom">
-                                <div class="character-bounce absolute top-2 left-2 w-6 h-6 bg-courage-green rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md">M</div>
-                                <div class="character-bounce absolute top-2 right-2 w-6 h-6 bg-courage-brown rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md">E</div>
                                 <span class="relative z-20 text-gray-800 font-semibold">Master Bedroom</span>
                             </div>
                             <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
@@ -124,8 +125,6 @@
                         <div class="grid grid-cols-2 gap-3">
                             <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
                                  data-room="living-room">
-                                <div class="character-bounce absolute top-2 left-2 w-6 h-6 bg-courage-pink rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md">C</div>
-                                <div class="character-bounce absolute bottom-2 left-2 w-6 h-6 bg-courage-brown rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md">E</div>
                                 <span class="relative z-20 text-gray-800 font-semibold">Living Room</span>
                             </div>
                             <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
@@ -134,7 +133,6 @@
                             </div>
                             <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
                                  data-room="kitchen">
-                                <div class="character-bounce absolute top-2 right-2 w-6 h-6 bg-courage-green rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md">M</div>
                                 <span class="relative z-20 text-gray-800 font-semibold">Kitchen</span>
                             </div>
                             <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
@@ -188,7 +186,7 @@
     </div>
 
     <!-- Mobile Room Info Panel -->
-    <div id="mobile-info-panel" class="fixed bottom-0 left-0 right-0 bg-card border-t-2 border-courage-pink p-4 z-50 transform translate-y-full">
+    <div id="mobile-info-panel" class="fixed bottom-0 left-0 right-0 bg-card border-t-2 border-courage-pink p-4 pb-12 z-50 transform translate-y-full">
         <div class="flex justify-between items-center mb-2">
             <h5 class="text-base text-primary font-medium">Room Information</h5>
             <button id="close-mobile-info" class="text-gray-400 hover:text-white">
@@ -290,57 +288,80 @@
             const mobileInfoPanel = document.getElementById('mobile-info-panel');
             const closeMobileInfo = document.getElementById('close-mobile-info');
 
+            // Track currently selected room
+            let currentlySelectedRoom = null;
+            
             roomButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const roomId = this.getAttribute('data-room');
+                // Combined click and hover handler using a single function
+                function updateRoomInfo(roomId, isClick) {
                     const roomData = houseData[roomId];
+                    if (!roomData) return;
                     
-                    if (roomData) {
-                        // Remove previous selection
-                        roomButtons.forEach(btn => btn.classList.remove('room-selected', 'border-pink-500', 'shadow-pink-400/40'));
-                        
-                        // Add selection styles
-                        this.classList.add('room-selected', 'border-pink-500', 'shadow-lg', 'shadow-pink-400/40');
-                        
-                        // Update info panels (both desktop and mobile)
-                        const infoHTML = `
-                            <span class="inline-block horror-accent-bg horror-accent-text px-3 py-1 rounded-full text-xs font-medium mb-3">${roomData.floor}</span>
-                            <h4 class="text-xl font-bold accent-text mb-3">${roomData.name}</h4>
-                            <p class="text-secondary mb-3">${roomData.description}</p>
-                            <p class="text-secondary text-sm font-medium italic">${roomData.features}</p>
-                        `;
-                        
-                        if (roomInfoPanel) roomInfoPanel.innerHTML = infoHTML;
-                        if (mobileRoomInfoPanel) mobileRoomInfoPanel.innerHTML = infoHTML;
-                        
-                        // Show mobile info panel on smaller screens
-                        if (window.innerWidth < 1280) {
-                            mobileInfoPanel.classList.remove('translate-y-full');
-                            mobileInfoPanel.classList.add('slide-up');
+                    const infoHTML = `
+                        <span class="inline-block horror-accent-bg horror-accent-text px-3 py-1 rounded-full text-xs font-medium mb-3">${roomData.floor}</span>
+                        <h4 class="text-xl font-bold accent-text mb-3">${roomData.name}</h4>
+                        <p class="text-secondary mb-3">${roomData.description}</p>
+                        <p class="text-secondary text-sm font-medium italic">${roomData.features}</p>
+                    `;
+                    
+                    if (isClick) {
+                        // If there's already a selected room and we're on mobile, close it first
+                        if (currentlySelectedRoom && window.innerWidth < 1280 && mobileInfoPanel.classList.contains('slide-up')) {
+                            // Close current panel with animation
+                            mobileInfoPanel.classList.add('slide-down');
+                            mobileInfoPanel.classList.remove('slide-up');
+                            
+                            // Wait for animation to complete before opening new panel
+                            setTimeout(() => {
+                                // Update selection and content
+                                roomButtons.forEach(btn => btn.classList.remove('room-selected', 'border-pink-500'));
+                                button.classList.add('room-selected', 'border-pink-500');
+                                
+                                if (roomInfoPanel) roomInfoPanel.innerHTML = infoHTML;
+                                if (mobileRoomInfoPanel) mobileRoomInfoPanel.innerHTML = infoHTML;
+                                
+                                // Open new panel
+                                mobileInfoPanel.classList.remove('translate-y-full', 'slide-down');
+                                mobileInfoPanel.classList.add('slide-up');
+                            }, 280);
+                        } else {
+                            // Normal behavior if no panel is open or on desktop
+                            roomButtons.forEach(btn => btn.classList.remove('room-selected', 'border-pink-500'));
+                            button.classList.add('room-selected', 'border-pink-500');
+                            
+                            if (roomInfoPanel) roomInfoPanel.innerHTML = infoHTML;
+                            if (mobileRoomInfoPanel) mobileRoomInfoPanel.innerHTML = infoHTML;
+                            
+                            if (window.innerWidth < 1280) {
+                                mobileInfoPanel.classList.remove('translate-y-full');
+                                mobileInfoPanel.classList.add('slide-up');
+                            }
                         }
+                        
+                        // Update currently selected room
+                        currentlySelectedRoom = roomId;
+                    } else if (roomInfoPanel && !button.classList.contains('room-selected')) {
+                        roomInfoPanel.innerHTML = infoHTML;
                     }
+                }
+                
+                button.addEventListener('click', function() {
+                    updateRoomInfo(this.getAttribute('data-room'), true);
                 });
 
-                // Add hover effect for info panel (desktop only)
                 button.addEventListener('mouseenter', function() {
-                    const roomId = this.getAttribute('data-room');
-                    const roomData = houseData[roomId];
-                    
-                    if (roomData && !this.classList.contains('room-selected') && roomInfoPanel) {
-                        roomInfoPanel.innerHTML = `
-                            <span class="inline-block horror-accent-bg horror-accent-text px-3 py-1 rounded-full text-xs font-medium mb-3">${roomData.floor}</span>
-                            <h4 class="text-xl font-bold accent-text mb-3">${roomData.name}</h4>
-                            <p class="text-secondary mb-3">${roomData.description}</p>
-                            <p class="text-secondary text-sm font-medium italic">${roomData.features}</p>
-                        `;
-                    }
+                    updateRoomInfo(this.getAttribute('data-room'), false);
                 });
             });
             
             // Close mobile info panel
             closeMobileInfo.addEventListener('click', function() {
-                mobileInfoPanel.classList.add('translate-y-full');
+                mobileInfoPanel.classList.add('slide-down');
                 mobileInfoPanel.classList.remove('slide-up');
+                setTimeout(() => {
+                    mobileInfoPanel.classList.add('translate-y-full');
+                    mobileInfoPanel.classList.remove('slide-down');
+                }, 280);
             });
         });
     </script>
@@ -374,19 +395,7 @@
                 }
             });
             
-            // Header search functionality
-            const headerSearch = document.getElementById('headerSearch');
-            let searchTimeout;
-            
-            headerSearch?.addEventListener('input', (e) => {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    const query = e.target.value.toLowerCase();
-                    if (!query.trim()) return;
-                    
-                    // Implement search functionality here if needed
-                }, 300);
-            });
+
         });
     </script>
     
