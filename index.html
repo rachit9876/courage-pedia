@@ -109,6 +109,7 @@
                     <div class="py-1">
                         <a href="cookbook/book.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Recipe Book</a>
                         <a href="#characters" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Characters</a>
+                        <a href="gallery.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Gallery</a>
                         <a href="research.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Research</a>
                     </div>
                 </div>
@@ -142,6 +143,9 @@
                             </a>
                             <a href="research.html" id="research-button" class="pixel-button px-3 py-2 text-xs font-bold transition-all duration-200 transform hover:scale-105 active:scale-95" style="background-color:#9333ea; color:#fff;">
                                 RESEARCH
+                            </a>
+                            <a href="gallery.html" id="gallery-button" class="pixel-button px-3 py-2 text-xs font-bold transition-all duration-200 transform hover:scale-105 active:scale-95" style="background-color:#36a37a; color:#fff;">
+                                GALLERY
                             </a>
                         </div>
                     </div>
@@ -436,18 +440,9 @@
         </div>
     </section>
 
-    <footer class="bg-card shadow-inner py-6">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-secondary">
-            <div class="mb-4">
-                <h4 class="font-bold mb-2" style="color:#fdc3ed;">Courage the Cowardly Dog Fan Site</h4>
-                <p class="text-sm">Information & Research</p>
-            </div>
-            <p>@rachit.zip</p>
-            <p class="text-xs mt-2">This is a fan-made, informational project and is not affiliated with Cartoon Network or John R. Dilworth. Based on the in-depth research report on Courage the Cowardly Dog.</p>
-            <p class="text-xs mt-2"><a href="disclaimer.html" class="underline hover:text-pink-300">Copyright Disclaimer</a></p>
-            <div class="mt-4 text-xs">
-                <p>Keywords: courage the cowardly dog, cartoon network, characters, research</p>
-            </div>
+    <footer class="bg-card shadow-inner py-2 mt-8">
+        <div class="container mx-auto px-4 text-center text-secondary">
+            <p class="text-xs">Courage the Cowardly Dog Fan Site | @rachit.zip | <a href="disclaimer.html" class="underline hover:text-pink-300">Copyright Disclaimer</a></p>
         </div>
     </footer>
 
@@ -775,28 +770,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const charactersSection = document.getElementById('characters');
     if (charactersSection) observer.observe(charactersSection);
     
-    renderEpisodes();
-    
     // Menu dropdown toggle
     const menuBtn = document.getElementById('menuBtn');
     const menuDropdown = document.getElementById('menuDropdown');
     
-    menuBtn?.addEventListener('click', () => {
-        menuDropdown.classList.toggle('hidden');
-    });
+    if (menuBtn && menuDropdown) {
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menuDropdown.classList.toggle('hidden');
+        });
+    }
     
     // Close menu when clicking nav links or outside
     document.addEventListener('click', (e) => {
-        if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+        if (menuDropdown && !menuDropdown.classList.contains('hidden') && 
+            menuBtn && !menuBtn.contains(e.target) && 
+            !menuDropdown.contains(e.target)) {
             menuDropdown.classList.add('hidden');
         }
     });
     
-    menuDropdown?.addEventListener('click', (e) => {
-        if (e.target.classList.contains('nav-item')) {
-            menuDropdown.classList.add('hidden');
-        }
-    });
+    if (menuDropdown) {
+        menuDropdown.addEventListener('click', (e) => {
+            if (e.target.classList.contains('nav-item')) {
+                menuDropdown.classList.add('hidden');
+            }
+        });
+    }
     
     // Header search functionality
     const headerSearch = document.getElementById('headerSearch');
