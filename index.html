@@ -1,326 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Courage-pedia – A Professional Wiki for Courage the Cowardly Dog</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courage the Cowardly Dog: Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Special Elite', cursive;
+            background-color: black;
+            color: #fdc3ed;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 80px auto 0 auto;
+            background-color: #1a1a1a;
+            border-radius: 15px;
+            padding: 32px 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5em;
+            color: #fdc3ed;
+        }
+        p {
+            color: #e0e0e0;
+            margin-bottom: 1.5em;
+        }
+        a.button {
+            display: inline-block;
+            background: #fdc3ed;
+            color: #1a1a1a;
+            padding: 0.75em 1.5em;
+            border-radius: 999px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 1em;
+            transition: background 0.2s;
+        }
+        a.button:hover {
+            background: #e0a9d6;
+        }
+    </style>
 </head>
 <body>
-  <!-- Fixed Global Header -->
-  <header class="header shadow-sm" role="banner">
-    <div class="container flex items-center justify-between py-8">
-      <a href="#overview" class="site-title h3 m-0" data-page="overview">Courage-pedia</a>
-      <nav class="nav flex gap-16" aria-label="Main Navigation">
-        <a href="#overview" class="nav__link" data-page="overview">Overview</a>
-        <a href="#characters" class="nav__link" data-page="characters">Characters</a>
-        <a href="#episodes" class="nav__link" data-page="episodes">Episodes</a>
-        <a href="#themes" class="nav__link" data-page="themes">Themes</a>
-        <a href="#production" class="nav__link" data-page="production">Production</a>
-        <a href="#legacy" class="nav__link" data-page="legacy">Legacy</a>
-      </nav>
+    <div id="main-header"></div>
+    <script src="header.js"></script>
+    <div class="container">
+        <h1>Welcome to Courage the Cowardly Dog Wiki</h1>
+        <p>
+            Dive into the world of Courage, Muriel, Eustace, and all the bizarre adventures from Nowhere!<br>
+            Use the navigation above to explore research, watch episodes, view the gallery, discover lost media, and more.
+        </p>
+        <a href="research.html" class="button">Go to Research</a>
     </div>
-  </header>
-
-  <!-- Main Content Wrapper -->
-  <main class="main-content" id="main-content" tabindex="-1">
-
-    <!-- OVERVIEW PAGE -->
-    <section id="overview" class="page-section" data-page="overview">
-      <div class="container py-16">
-        <h1 class="mb-8">Series Overview</h1>
-        <p>
-          <strong>Courage the Cowardly Dog</strong> is an American animated
-          television series created by <strong>John R. Dilworth</strong> for
-          <strong>Cartoon Network</strong>. The show originally aired from
-          <strong>1999 to 2002</strong>, spanning four seasons and a total of
-          52 episodes. It chronicles the misadventures of a timid pink beagle
-          named Courage who lives with his elderly owners on a desolate
-          farmhouse in <em>Nowhere, Kansas</em>. Despite his overwhelming fear,
-          Courage repeatedly confronts supernatural forces to protect his
-          family.
-        </p>
-
-        <div class="stats-grid mt-8">
-          <div class="stat-card card">
-            <div class="card__body">
-              <h3 class="mt-0">52</h3>
-              <p class="m-0">Total Episodes</p>
-            </div>
-          </div>
-          <div class="stat-card card">
-            <div class="card__body">
-              <h3 class="mt-0">4</h3>
-              <p class="m-0">Seasons</p>
-            </div>
-          </div>
-          <div class="stat-card card">
-            <div class="card__body">
-              <h3 class="mt-0">1999–2002</h3>
-              <p class="m-0">Original Run</p>
-            </div>
-          </div>
-        </div>
-
-        <h2 class="mt-16 mb-8">Premise</h2>
-        <p>
-          The series blends surreal horror, dark comedy, and heartfelt moments
-          to depict Courage’s struggle against paranormal adversaries.
-          Storylines frequently draw on classic horror films, literature, and
-          visual art while highlighting themes of bravery, family, and
-          isolation.
-        </p>
-      </div>
-    </section>
-
-    <!-- CHARACTERS PAGE -->
-    <section id="characters" class="page-section hidden" data-page="characters">
-      <div class="container py-16">
-        <h1 class="mb-8">Main & Supporting Characters</h1>
-
-        <!-- Table of Contents -->
-        <nav class="toc card mb-16" aria-label="Characters Table of Contents">
-          <div class="card__body">
-            <strong>Contents</strong>
-            <ul class="mt-8">
-              <li><a href="#char-courage">Courage</a></li>
-              <li><a href="#char-muriel">Muriel Bagge</a></li>
-              <li><a href="#char-eustace">Eustace Bagge</a></li>
-              <li><a href="#char-computer">The Computer</a></li>
-              <li><a href="#villains">Major Villains</a></li>
-            </ul>
-          </div>
-        </nav>
-
-        <!-- Main Characters -->
-        <article id="char-courage" class="mb-16">
-          <h2>Courage</h2>
-          <p class="mt-8">
-            Voiced by <em>Marty Grabstein</em>, Courage is a timid pink beagle
-            plagued by severe anxiety but capable of extraordinary bravery.
-            Eternally loyal to his owners, he routinely overcomes supernatural
-            threats despite his own terror.
-          </p>
-          <ul class="mt-8">
-            <li>Timid yet fiercely protective</li>
-            <li>Prone to comedic panic attacks and exaggerated screams</li>
-            <li>Embodies the show’s central message: courage is acting in spite
-              of fear</li>
-          </ul>
-        </article>
-
-        <article id="char-muriel" class="mb-16">
-          <h2>Muriel Bagge</h2>
-          <p class="mt-8">
-            <em>Thea White</em> voices Muriel, a gentle Scottish grandmotherly
-            figure who offers Courage unconditional love. Her kindness often
-            contrasts with the show’s darker elements.
-          </p>
-          <ul class="mt-8">
-            <li>Kind-hearted and optimistic</li>
-            <li>Enjoys tea, gardening, sitar, and vinegar</li>
-            <li>Acts as Courage’s emotional anchor</li>
-          </ul>
-        </article>
-
-        <article id="char-eustace" class="mb-16">
-          <h2>Eustace Bagge</h2>
-          <p class="mt-8">
-            Voiced by <em>Lionel Wilson</em> (Seasons 1-3) and
-            <em>Arthur Anderson</em> (Seasons 3-4), Eustace is Muriel’s grumpy
-            husband whose catchphrase “Stupid Dog!” underscores his adversarial
-            relationship with Courage.
-          </p>
-          <ul class="mt-8">
-            <li>Greedy and cantankerous</li>
-            <li>Loves his vintage pickup truck</li>
-            <li>Frequently endangers the family through selfish decisions</li>
-          </ul>
-        </article>
-
-        <article id="char-computer" class="mb-16">
-          <h2>The Computer</h2>
-          <p class="mt-8">
-            Voiced by <em>Simon Prebble</em>, the sarcastic attic computer
-            provides Courage with vital (and often snarky) exposition when
-            researching monsters.
-          </p>
-          <ul class="mt-8">
-            <li>Sarcastic British persona</li>
-            <li>Dispenses encyclopedic knowledge of paranormal phenomena</li>
-          </ul>
-        </article>
-
-        <!-- Major Villains -->
-        <article id="villains">
-          <h2>Major Villains</h2>
-
-          <h3 class="mt-8">Katz</h3>
-          <p>
-            Katz is a sophisticated red feline and Courage’s recurring nemesis.
-            Known for his “No Dogs Allowed” policy, Katz runs deadly
-            enterprises such as the Katz Motel and Klub Katz.
-          </p>
-          <p class="mb-8"><strong>Key Episodes:</strong> “A Night at the Katz Motel,” “Klub Katz,” “Katz Kandy,” “Katz Under the Sea”</p>
-
-          <h3 class="mt-16">King Ramses</h3>
-          <p>
-            The ghostly Pharaoh demands, “Return the slab!” and unleashes
-            biblical plagues when defied, marking one of the series’ most
-            frightening antagonists.
-          </p>
-          <p class="mb-8"><strong>Key Episode:</strong> “King Ramses’ Curse”</p>
-
-          <h3 class="mt-16">Freaky Fred</h3>
-          <p>
-            Muriel’s unnerving nephew is an obsessive barber who speaks in
-            rhymes and delights in shaving hair, culminating in one of the
-            show’s creepiest installments.
-          </p>
-          <p><strong>Key Episode:</strong> “Freaky Fred”</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- EPISODES PAGE -->
-    <section id="episodes" class="page-section hidden" data-page="episodes">
-      <div class="container py-16">
-        <h1 class="mb-8">Episode Guide & Analysis</h1>
-        <p>
-          <strong>Courage the Cowardly Dog</strong> comprises 52 episodes across
-          four seasons. Below is an overview of several landmark episodes that
-          exemplify the series’ blend of horror and heart.
-        </p>
-
-        <article class="mt-16">
-          <h2>“King Ramses’ Curse” (Season 1)</h2>
-          <p class="mt-8">
-            Often hailed as the series’ most terrifying episode, King Ramses’
-            ghost plagues the Bagge family with locusts, floods, and an
-            ear-splitting soundtrack until Courage retrieves a stolen slab.
-          </p>
-        </article>
-
-        <article class="mt-16">
-          <h2>“Freaky Fred” (Season 1)</h2>
-          <p class="mt-8">
-            This episode introduces Muriel’s unnerving nephew Fred, whose
-            rhyming monologue and obsession with shaving hair add psychological
-            unease to the show’s horror-comedy formula.
-          </p>
-        </article>
-
-        <article class="mt-16">
-          <h2>“Perfect” (Season 4 Finale)</h2>
-          <p class="mt-8">
-            The poignant finale confronts Courage’s lingering trauma of
-            abandonment. Through surreal dream sequences, Courage learns that
-            imperfection is acceptable, culminating in his first genuine smile.
-          </p>
-        </article>
-      </div>
-    </section>
-
-    <!-- THEMES PAGE -->
-    <section id="themes" class="page-section hidden" data-page="themes">
-      <div class="container py-16">
-        <h1 class="mb-8">Psychological & Narrative Themes</h1>
-        <p>
-          Beyond jump scares and comedic horror, <em>Courage the Cowardly Dog</em>
-          tackles profound psychological concepts. The following themes recur
-          throughout the series:
-        </p>
-
-        <article class="mt-16">
-          <h2>True Nature of Courage</h2>
-          <p class="mt-8">
-            The show reframes courage as perseverance in the face of fear.
-            Courage’s willingness to protect his family—despite being
-            perpetually afraid—illustrates that bravery is defined by action,
-            not the absence of terror.
-          </p>
-        </article>
-
-        <article class="mt-16">
-          <h2>Isolation & Family</h2>
-          <p class="mt-8">
-            Set in the desolate plains of “Nowhere, Kansas,” the series
-            underscores themes of isolation and the grounding power of familial
-            love. The farmhouse is simultaneously a place of vulnerability and
-            sanctuary.
-          </p>
-        </article>
-
-        <article class="mt-16">
-          <h2>Trauma & Healing</h2>
-          <p class="mt-8">
-            Courage’s backstory of abandonment resonates through recurring
-            nightmares and flashbacks. Episodes like “Remembrance of Courage
-            Past” explore trauma’s lingering effects and the slow journey
-            toward self-acceptance.
-          </p>
-        </article>
-      </div>
-    </section>
-
-    <!-- PRODUCTION PAGE -->
-    <section id="production" class="page-section hidden" data-page="production">
-      <div class="container py-16">
-        <h1 class="mb-8">Production & Creative Process</h1>
-
-        <h2 class="mt-16">Animation Style</h2>
-        <p class="mt-8">
-          The series combines traditional 2D animation with CGI and occasional
-          live-action inserts, yielding a visually eclectic style that enhances
-          its surreal tone.
-        </p>
-
-        <h2 class="mt-16">Music</h2>
-        <p class="mt-8">
-          Composers <em>Jody Gray</em> and <em>Andy Ezrin</em> crafted a dynamic
-          score ranging from ominous orchestration to playful motifs, expertly
-          amplifying tension and humor.
-        </p>
-
-        <h2 class="mt-16">Distinctive Features</h2>
-        <ul class="mt-8">
-          <li>Surreal visual transformations and squash-and-stretch character animation</li>
-          <li>Dark humor juxtaposed with heartfelt moments</li>
-          <li>Frequent nods to classic horror, literature, and fine art</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- LEGACY PAGE -->
-    <section id="legacy" class="page-section hidden" data-page="legacy">
-      <div class="container py-16">
-        <h1 class="mb-8">Legacy & Cultural Impact</h1>
-        <p>
-          Although <em>Courage the Cowardly Dog</em> ended in 2002, its unique
-          blend of child-friendly horror and emotional depth secured a lasting
-          cult following. The show continues to inspire scholarly discussion on
-          animation’s capacity to tackle complex psychological themes within a
-          family-oriented format.
-        </p>
-
-        <h2 class="mt-16">Influence on Animation</h2>
-        <p class="mt-8">
-          Courage paved the way for later series that balance comedy with
-          existential or horror elements, demonstrating that children’s
-          programming can embrace sophisticated storytelling techniques.
-        </p>
-
-        <h2 class="mt-16">Internet & Fandom</h2>
-        <p class="mt-8">
-          Memorable villains like King Ramses and Freaky Fred persist in online
-          meme culture. Fan theories, analyses, and artwork keep the series
-          relevant more than two decades after its premiere.
-        </p>
-      </div>
-    </section>
-  </main>
-
-  <script src="app.js"></script>
 </body>
 </html>
