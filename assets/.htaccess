@@ -1,0 +1,23 @@
+# Prevent direct access to media files
+RewriteEngine On
+
+# Block direct access to images
+RewriteCond %{HTTP_REFERER} !^https?://localhost [NC]
+RewriteCond %{HTTP_REFERER} !^https?://127.0.0.1 [NC]
+RewriteCond %{HTTP_REFERER} !^https?://.*\.localhost [NC]
+RewriteRule \.(jpg|jpeg|png|gif|webp|svg)$ - [F,L]
+
+# Prevent hotlinking
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?localhost [NC]
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?127.0.0.1 [NC]
+RewriteRule \.(jpg|jpeg|png|gif|webp|svg)$ /courage/assets/blocked.png [R,L]
+
+# Disable directory browsing
+Options -Indexes
+
+# Prevent access to sensitive files
+<Files "*.csv">
+    Order Allow,Deny
+    Deny from all
+</Files>

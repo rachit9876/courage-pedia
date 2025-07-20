@@ -1,0 +1,244 @@
+{
+  "title": "Muriel's Farmhouse Cookbook: Recipes from Nowhere, Kansas",
+  "subtitle": "A Complete Collection of Courage the Cowardly Dog Recipes",
+  "description": "Step into Muriel's kitchen and discover the magical recipes that have appeared throughout the adventures of Courage the Cowardly Dog. From the famous Happy Plums to Little Muriel's extravagant macaroni and cheese, this cookbook brings you all the culinary delights from the middle of Nowhere!",
+  "recipes": [
+    {
+      "name": "Happy Plums",
+      "episode": "The Tower of Dr. Zalost",
+      "description": "These magical plums have the power to restore happiness and defeat the gloomiest of villains. Muriel's special recipe combines sweet roasted plums with a tangy balsamic reduction.",
+      "servings": "4",
+      "prep_time": "15 minutes",
+      "cook_time": "35 minutes",
+      "ingredients": [
+        "4 large plums, halved and pitted",
+        "2 tablespoons sugar",
+        "1 tablespoon coconut oil",
+        "1/2 cup balsamic vinegar",
+        "1/4 teaspoon vanilla extract",
+        "1 teaspoon fresh rosemary, chopped",
+        "Sour cream for serving",
+        "2 tablespoons honey"
+      ],
+      "instructions": [
+        "Preheat your oven to 350\u00b0F (175\u00b0C).",
+        "Cut plums in half and remove the pits.",
+        "Coat a baking pan with coconut oil.",
+        "Brush plums with coconut oil and sprinkle with sugar.",
+        "Bake for 20 minutes until plums are soft and caramelized.",
+        "Meanwhile, combine balsamic vinegar and rosemary in a saucepan.",
+        "Bring to a boil, then reduce heat and simmer for 8 minutes.",
+        "Add remaining sugar and vanilla, stir until dissolved.",
+        "Strain the syrup to remove rosemary pieces.",
+        "Place warm plums in serving mugs.",
+        "Drizzle with balsamic syrup and honey.",
+        "Top with a dollop of sour cream and serve immediately."
+      ],
+      "muriel_tip": "The secret is in the vinegar reduction - it balances the sweetness perfectly!"
+    },
+    {
+      "name": "Little Muriel's Macaroni and Cheese",
+      "episode": "Little Muriel",
+      "description": "This isn't just any mac and cheese - this is the extravagant, buttery, cheesy masterpiece that even the most demanding three-year-old Muriel would approve of.",
+      "servings": "8-10",
+      "prep_time": "20 minutes",
+      "cook_time": "35 minutes",
+      "ingredients": [
+        "1 pound elbow macaroni",
+        "10 tablespoons butter",
+        "1 cup b\u00e9chamel sauce",
+        "2 cups sharp cheddar cheese, grated",
+        "1 cup havarti cheese, grated",
+        "1 cup monterey jack cheese, grated",
+        "Salt and pepper to taste",
+        "Breadcrumbs for topping (optional)"
+      ],
+      "instructions": [
+        "Preheat oven to 350\u00b0F (175\u00b0C) and butter a 9x13 inch casserole dish.",
+        "Cook macaroni to al dente (1 minute less than package directions).",
+        "Prepare b\u00e9chamel sauce and keep warm.",
+        "Drain pasta and immediately add butter, stirring until melted.",
+        "Mix in b\u00e9chamel sauce and half of all the grated cheeses.",
+        "Layer half the pasta mixture in the prepared dish.",
+        "Sprinkle with a layer of remaining cheese.",
+        "Top with remaining pasta and final layer of cheese.",
+        "Bake for 15-20 minutes until bubbly and golden.",
+        "Let cool for 5 minutes before serving."
+      ],
+      "muriel_tip": "Never use pre-grated cheese - grate it yourself for the best flavor!"
+    },
+    {
+      "name": "Scottish Dream Cookies",
+      "episode": "Le Quack Balloon",
+      "description": "These buttery Scottish shortbread cookies are Muriel's specialty, made with love and perhaps a bit too much butter (just the way she likes it!).",
+      "servings": "24 cookies",
+      "prep_time": "15 minutes",
+      "cook_time": "20 minutes",
+      "ingredients": [
+        "1 cup (2 sticks) butter, softened",
+        "1/2 cup powdered sugar",
+        "1 3/4 cups all-purpose flour",
+        "1/4 teaspoon salt",
+        "1 teaspoon vanilla extract",
+        "Sugar for sprinkling"
+      ],
+      "instructions": [
+        "Preheat oven to 325\u00b0F (165\u00b0C).",
+        "Cream butter and powdered sugar until light and fluffy.",
+        "Add vanilla extract and mix well.",
+        "Gradually add flour and salt, mixing until just combined.",
+        "Roll dough into 1-inch balls and place on ungreased baking sheets.",
+        "Flatten slightly with a fork in a crisscross pattern.",
+        "Sprinkle with sugar.",
+        "Bake for 18-20 minutes until edges are lightly golden.",
+        "Cool on baking sheet for 5 minutes before transferring to wire rack."
+      ],
+      "muriel_tip": "I like to use extra butter - it makes them extra dreamy!"
+    },
+    {
+      "name": "Flantasy Flan",
+      "episode": "King of Flan",
+      "description": "This hypnotically delicious flan is so good, it could take over a whole town! Rich, creamy, and topped with golden caramel.",
+      "servings": "6",
+      "prep_time": "30 minutes",
+      "cook_time": "50 minutes",
+      "ingredients": [
+        "1 cup sugar (divided)",
+        "3 cups whole milk",
+        "4 large eggs",
+        "1/4 teaspoon salt",
+        "2 teaspoons vanilla extract",
+        "Yellow food coloring (optional)"
+      ],
+      "instructions": [
+        "Preheat oven to 325\u00b0F (165\u00b0C).",
+        "In a saucepan, melt 1/2 cup sugar over medium heat until amber colored.",
+        "Quickly pour caramel into 6 ramekins, swirling to coat bottoms.",
+        "Heat milk and 1/4 cup sugar until steaming (don't boil).",
+        "In a bowl, whisk eggs, salt, and remaining 1/4 cup sugar.",
+        "Slowly add hot milk to egg mixture, whisking constantly.",
+        "Strain mixture and add vanilla and food coloring.",
+        "Pour into prepared ramekins.",
+        "Place in baking dish and add hot water halfway up sides.",
+        "Bake 45-50 minutes until set.",
+        "Cool completely, then refrigerate for at least 4 hours.",
+        "To serve, run knife around edge and invert onto plates."
+      ],
+      "muriel_tip": "Don't let it hypnotize you before you finish making it!"
+    },
+    {
+      "name": "Muriel's Award-Winning Dog Food",
+      "episode": "Invisible Muriel",
+      "description": "This secret recipe won first place at the County Dog Food Contest. It's so good, even the government wants the recipe!",
+      "servings": "Makes about 4 cups",
+      "prep_time": "10 minutes",
+      "cook_time": "20 minutes",
+      "ingredients": [
+        "1 pound ground turkey",
+        "1 cup brown rice",
+        "1/2 cup carrots, diced",
+        "1/2 cup green beans, chopped",
+        "1/4 cup peas",
+        "2 tablespoons olive oil",
+        "1 egg",
+        "Secret ingredient: 1 tablespoon nutritional yeast"
+      ],
+      "instructions": [
+        "Cook brown rice according to package directions.",
+        "Heat olive oil in a large skillet.",
+        "Cook ground turkey until browned and fully cooked.",
+        "Add carrots and cook for 5 minutes.",
+        "Add green beans and peas, cook for 3 minutes.",
+        "Mix in cooked rice and beaten egg.",
+        "Stir in the secret ingredient - nutritional yeast!",
+        "Cool completely before serving to your dog.",
+        "Store in refrigerator for up to 3 days."
+      ],
+      "muriel_tip": "The secret ingredient must remain secret - that's why it's so special!"
+    },
+    {
+      "name": "Eustace's Favorite Mashed Potatoes",
+      "episode": "Family Business",
+      "description": "These aren't just any mashed potatoes - they're Muriel's specialty with a secret ingredient that makes them irresistible.",
+      "servings": "6",
+      "prep_time": "15 minutes",
+      "cook_time": "25 minutes",
+      "ingredients": [
+        "2 pounds russet potatoes, peeled and cubed",
+        "1/2 cup warm milk",
+        "4 tablespoons butter",
+        "Salt and pepper to taste",
+        "Secret ingredient: 2 tablespoons cream cheese"
+      ],
+      "instructions": [
+        "Boil potatoes in salted water until tender, about 20 minutes.",
+        "Drain thoroughly and let cool slightly.",
+        "Mash potatoes with a potato masher or ricer.",
+        "Add warm milk and butter gradually.",
+        "Season with salt and pepper.",
+        "Stir in the secret ingredient - cream cheese!",
+        "Whip until smooth and fluffy.",
+        "Serve immediately while hot."
+      ],
+      "muriel_tip": "The secret ingredient makes them extra creamy - but don't tell Eustace!"
+    },
+    {
+      "name": "Courage's Comfort Soup",
+      "episode": "Various episodes",
+      "description": "A warming soup that helps calm even the most frightened souls. Perfect for those scary nights in Nowhere.",
+      "servings": "4",
+      "prep_time": "15 minutes",
+      "cook_time": "30 minutes",
+      "ingredients": [
+        "2 tablespoons olive oil",
+        "1 onion, diced",
+        "2 carrots, sliced",
+        "2 celery stalks, chopped",
+        "4 cups chicken broth",
+        "1 cup small pasta or noodles",
+        "1 cup cooked chicken, shredded",
+        "Salt and pepper to taste",
+        "Fresh parsley for garnish"
+      ],
+      "instructions": [
+        "Heat olive oil in a large pot.",
+        "Saut\u00e9 onion, carrots, and celery until softened.",
+        "Add chicken broth and bring to a boil.",
+        "Add pasta and cook according to package directions.",
+        "Stir in cooked chicken and heat through.",
+        "Season with salt and pepper.",
+        "Garnish with fresh parsley before serving.",
+        "Serve hot with crackers or bread."
+      ],
+      "muriel_tip": "This soup can cure anything - even the worst case of the scares!"
+    },
+    {
+      "name": "Nowhere Farmhouse Bread",
+      "episode": "Background staple",
+      "description": "A hearty homemade bread that's perfect for any meal at the Bagge farmhouse. Simple, rustic, and delicious.",
+      "servings": "1 loaf",
+      "prep_time": "20 minutes (plus rising time)",
+      "cook_time": "35 minutes",
+      "ingredients": [
+        "3 cups bread flour",
+        "1 teaspoon salt",
+        "1 teaspoon sugar",
+        "1 packet active dry yeast",
+        "1 cup warm water",
+        "2 tablespoons olive oil"
+      ],
+      "instructions": [
+        "Dissolve yeast and sugar in warm water. Let stand 5 minutes.",
+        "Mix flour and salt in a large bowl.",
+        "Add yeast mixture and olive oil to flour.",
+        "Knead until smooth and elastic, about 10 minutes.",
+        "Place in oiled bowl, cover, and let rise 1 hour.",
+        "Punch down and shape into a loaf.",
+        "Place in greased loaf pan and let rise 30 minutes.",
+        "Bake at 375\u00b0F for 30-35 minutes until golden.",
+        "Cool on wire rack before slicing."
+      ],
+      "muriel_tip": "Nothing beats fresh bread from the farmhouse oven!"
+    }
+  ]
+}

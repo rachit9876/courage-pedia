@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>Courage Episodes Stream</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="bingbot" content="noindex, nofollow">
+  <meta name="slurp" content="noindex, nofollow">
+  <meta name="duckduckbot" content="noindex, nofollow">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <script src="video-protection.js"></script>
+  <script src="stream-protection.js"></script>
+  <script src="media-protection.js"></script>
+  <script src="network-protection.js"></script>
+  <script src="dev-detector.js"></script>
+  <script src="pwa-install.js"></script>
+  <style>
+   body{overflow-x:hidden}
+   .bg-card{background:#333}.bg-card-opacity{background:rgba(51,51,51,.5)}
+   .episode-item:hover{background:rgba(255,255,255,.1)}
+   .episode-item.active{background:rgba(255,255,255,.2);border-left:3px solid #fff}
+   video{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:auto;-webkit-user-drag:none}
+   video::-webkit-media-controls-download-button{display:none!important}
+   .video-overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;background:transparent}
+   
+   .shimmer {
+     position: relative;
+     overflow: hidden;
+     background: #e2e8f0;
+   }
+   
+   .shimmer::after {
+     content: '';
+     position: absolute;
+     top: 0;
+     left: -150%;
+     height: 100%;
+     width: 150%;
+     background: linear-gradient(
+       120deg,
+       transparent 25%,
+       rgba(255, 255, 255, 0.6) 50%,
+       transparent 75%
+     );
+     animation: shimmer 1.5s infinite;
+   }
+   
+   @keyframes shimmer {
+     100% {
+       left: 100%;
+     }
+   }
+   
+   @media (prefers-color-scheme: dark) {
+     .shimmer {
+       background: #374151;
+     }
+   }
+   @media(max-width:768px){
+    .episode-list{max-height:40vh}
+    .pt-24{padding-top:4rem}
+    .p-4{padding:0.75rem}
+    .p-3{padding:0.5rem}
+    .text-6xl{font-size:3rem}
+    .text-lg{font-size:1rem}
+    .text-xl{font-size:1.125rem}
+   }
+   @media(max-width:480px){
+    .episode-list{max-height:35vh}
+    .pt-24{padding-top:3.5rem}
+    .p-4{padding:0.5rem}
+    .p-3{padding:0.375rem}
+    .text-6xl{font-size:2.5rem}
+    .text-lg{font-size:0.9rem}
+    .text-xl{font-size:1rem}
+    .text-sm{font-size:0.8rem}
+    .text-xs{font-size:0.7rem}
+   }
+  </style>
+  
+  <!-- Cache confirmation popup styles -->
+  <style>
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+    
+    .popup-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .popup-content {
+      background: #333;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 1.5rem;
+      width: 90%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      transform: translateY(-20px);
+      transition: transform 0.3s;
+    }
+    
+    .popup-overlay.active .popup-content {
+      transform: translateY(0);
+    }
+    
+    .popup-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    
+    .popup-btn {
+      padding: 0.5rem 1.5rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    
+    .popup-btn:hover {
+      opacity: 0.8;
+    }
+    
+    .popup-btn-yes {
+      background-color: #fdc3ed;
+      color: black;
+    }
+    
+    .popup-btn-no {
+      background-color: #4b5563;
+      color: white;
+    }
+  </style>
+</head>
+<body class="bg-black text-white" style="font-family: 'Special Elite', monospace;">
+  <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/30 border-b border-white/10 flex items-center justify-between px-4 py-2">
+    <img src="logo.svg" alt="CN Logo" class="h-8 sm:h-10 w-auto flex-shrink-0" />
+    
+    <div class="flex-1 max-w-xs sm:max-w-sm md:max-w-md mx-2 sm:mx-4">
+      <input id="searchInput" type="text" placeholder="Search..." class="w-full px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full bg-card placeholder-gray-400 border border-gray-600 focus:outline-none focus:border-gray-400 text-xs sm:text-sm" style="color:#fdc3ed;">
+    </div>
+    
+    <div class="flex items-center flex-shrink-0 gap-2" style="color:#fdc3ed;">
+      <select id="seasonFilter" class="bg-card border border-gray-600 rounded px-1 py-1 text-xs sm:text-sm focus:outline-none">
+        <option value="">All</option>
+        <option value="1">S1</option>
+        <option value="2">S2</option>
+        <option value="3">S3</option>
+        <option value="4">S4</option>
+      </select>
+      
+      <button id="clearCacheBtn" style="background-color:#fdc3ed;" class="hover:opacity-80 px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-xs sm:text-sm font-semibold transition-colors text-black">Delete Cache</button>
+      <div class="relative">
+        <button id="menuBtn" class="focus:outline-none hover:text-gray-300 p-1">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <div id="menuDropdown" class="absolute right-0 mt-2 w-44 sm:w-48 bg-card border border-gray-600 rounded-lg shadow-lg hidden z-50">
+          <div class="py-1">
+            <a href="index.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Home</a>
+            <a href="gallery.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Gallery</a>
+            <a href="lostmedia.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-red-400 hover:bg-gray-700">Lost Media</a>
+            <a href="cookbook/book.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Recipe Book</a>
+            <a href="ost.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">O.S.T (Music)</a>
+            <a href="#characters" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Characters</a>
+            <a href="research.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Research</a>   
+          
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Breadcrumb Navigation -->
+  <nav class="pt-16 sm:pt-20 md:pt-24 px-4 py-2 text-sm text-gray-400">
+    <ol class="flex items-center space-x-2">
+      <li><a href="index.html" class="hover:text-white">Home</a></li>
+      <li>/</li>
+      <li class="text-white">Watch Episodes</li>
+    </ol>
+  </nav>
+
+  <main class="flex flex-col lg:flex-row min-h-screen">
+    <!-- Video Player -->
+    <div class="flex-1 bg-black flex items-center justify-center p-2 sm:p-4">
+      <div class="w-full max-w-3xl">
+        <div id="videoContainer" class="aspect-video bg-card-opacity rounded-lg flex items-center justify-center">
+          <div id="placeholder" class="text-center text-gray-400 px-4 cursor-pointer hover:text-gray-300 transition-colors">
+            <i class="fas fa-play-circle text-4xl sm:text-6xl mb-2 sm:mb-4"></i>
+            <h1 class="text-sm sm:text-lg font-bold mb-2">Watch Courage Episodes Free</h1>
+
+          </div>
+          <div id="videoLoader" role="status" class="w-full h-full rounded-lg shimmer hidden">
+            <span class="sr-only">Loading video...</span>
+          </div>
+          <video id="videoPlayer" class="w-full h-full rounded-lg hidden" controls controlsList="nodownload" disablePictureInPicture>
+            Your browser does not support the video tag.
+          </video>
+          <iframe id="drivePlayer" class="w-full h-full rounded-lg hidden" allowfullscreen></iframe>
+        </div>
+        <div id="episodeInfo" class="mt-2 sm:mt-4 hidden px-2">
+          <h2 id="episodeTitle" class="text-lg sm:text-xl font-bold mb-1 sm:mb-2"></h2>
+          <p id="episodeDetails" class="text-gray-400 text-sm sm:text-base"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Episode List -->
+    <div class="w-full lg:w-80 bg-card-opacity border-t lg:border-t-0 lg:border-l border-gray-600">
+      <div class="p-2 sm:p-4 border-b border-gray-600">
+        <div class="flex items-center justify-between mb-2">
+          <h2 id="episodeListTitle" class="text-base sm:text-lg font-bold">All Episodes</h2>
+          <select id="languageSelector" class="bg-card border border-gray-600 rounded px-2 py-1 text-xs sm:text-sm focus:outline-none">
+            <option value="hindi">Language: Hindi</option>
+            <option value="english">Language: English</option>
+          </select>
+        </div>
+        <p id="episodeListSubtitle" class="text-xs text-gray-400">All Episodes</p>
+      </div>
+      <div id="episodeList" class="episode-list overflow-y-auto" style="max-height: calc(100vh - 120px);">
+        <div id="episodeLoader" role="status" class="flex items-center justify-center h-56 max-w-sm rounded-lg shimmer mx-auto my-4">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <!-- Cache confirmation popup -->
+  <div id="cachePopup" class="popup-overlay">
+    <div class="popup-content">
+      <h3 class="text-lg font-bold mb-2">Delete Cache?</h3>
+      <p class="text-sm text-gray-300 mb-3">Are you sure you want to delete the cache?</p>
+      <div class="popup-buttons">
+        <button id="popupYesBtn" class="popup-btn popup-btn-yes text-xs sm:text-sm">Yes</button>
+        <button id="popupNoBtn" class="popup-btn popup-btn-no text-xs sm:text-sm">No</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allEpisodes = [];
+    let currentEpisode = null;
+    let currentLanguage = 'hindi';
+
+    async function loadEpisodes() {
+      const loader = document.getElementById('episodeLoader');
+      try {
+        loader.style.display = 'flex';
+        const csvFile = currentLanguage === 'hindi' ? 'CSV/CTCD_hindi.csv' : 'CSV/CTCD_english.csv';
+        const response = await fetch(csvFile);
+        if (!response.ok) throw new Error('Failed to load episode data');
+        const text = await response.text();
+        const lines = text.split('\n').slice(1);
+        
+        if (currentLanguage === 'hindi') {
+          allEpisodes = parseHindiCSV(lines);
+        } else {
+          allEpisodes = parseEnglishCSV(lines);
+        }
+        
+        displayEpisodes(allEpisodes);
+        loader.style.display = 'none';
+      } catch (error) {
+        console.error('Error loading episodes:', error);
+        loader.style.display = 'none';
+        document.getElementById('episodeList').innerHTML = '<div class="p-4 text-red-400">Failed to load episodes</div>';
+      }
+    }
+
+    function parseHindiCSV(lines) {
+      return lines.filter(line => line.trim()).map(line => {
+        const parts = line.split(',');
+        if (parts.length >= 4) {
+          const season = parseInt(parts[0]);
+          const episode = parseInt(parts[1]);
+          let title = parts[2];
+          let url = parts[3];
+          
+          // Handle quoted titles
+          if (title.startsWith('"')) {
+            title = title.substring(1);
+            let i = 3;
+            while (i < parts.length && !parts[i-1].endsWith('"')) {
+              title += ',' + parts[i];
+              i++;
+            }
+            if (title.endsWith('"')) title = title.slice(0, -1);
+            url = parts[i] || parts[parts.length - 1];
+          }
+          
+          return { season, episode, title: title.trim(), url: url.trim() };
+        }
+        return null;
+      }).filter(ep => ep);
+    }
+
+    function parseEnglishCSV(lines) {
+      return lines.filter(line => line.trim()).map(line => {
+        const parts = line.split(',');
+        if (parts.length >= 4) {
+          const season = parseInt(parts[0]);
+          const episode = parts[1]; // Keep as string for "1 (Part A)" format
+          let title = parts[2];
+          let url = parts[3];
+          
+          // Handle quoted titles
+          if (title.startsWith('"')) {
+            title = title.substring(1);
+            let i = 3;
+            while (i < parts.length && !parts[i-1].endsWith('"')) {
+              title += ',' + parts[i];
+              i++;
+            }
+            if (title.endsWith('"')) title = title.slice(0, -1);
+            url = parts[i] || parts[parts.length - 1];
+          }
+          
+          return { season, episode, title: title.trim(), url: url.trim() };
+        }
+        return null;
+      }).filter(ep => ep);
+    }
+
+    function switchLanguage(language) {
+      currentLanguage = language;
+      const titleElement = document.getElementById('episodeListTitle');
+      const subtitleElement = document.getElementById('episodeListSubtitle');
+      
+      if (language === 'hindi') {
+        titleElement.textContent = 'All Episodes';
+        subtitleElement.textContent = 'All Episodes';
+      } else {
+        titleElement.textContent = 'All English Episodes';
+        subtitleElement.textContent = 'All English Episodes';
+      }
+      
+      // Update placeholder text based on language
+      const placeholderTitle = document.querySelector('#placeholder h1');
+      if (placeholderTitle) {
+        placeholderTitle.textContent = 'Watch Courage Episodes Free';
+      }
+      
+      // Clear current episodes and reload
+      allEpisodes = [];
+      currentEpisode = null;
+      document.getElementById('episodeList').innerHTML = `
+        <div id="episodeLoader" role="status" class="flex items-center justify-center h-56 max-w-sm rounded-lg shimmer mx-auto my-4">
+          <span class="sr-only">Loading...</span>
+        </div>
+      `;
+      
+      // Reset video player
+      const videoPlayer = document.getElementById('videoPlayer');
+      const drivePlayer = document.getElementById('drivePlayer');
+      const placeholder = document.getElementById('placeholder');
+      const videoLoader = document.getElementById('videoLoader');
+      const episodeInfo = document.getElementById('episodeInfo');
+      
+      videoPlayer.classList.add('hidden');
+      drivePlayer.classList.add('hidden');
+      videoLoader.classList.add('hidden');
+      placeholder.classList.remove('hidden');
+      episodeInfo.classList.add('hidden');
+      
+      loadEpisodes();
+    }
+
+    function displayEpisodes(episodes) {
+      const list = document.getElementById('episodeList');
+      if (!episodes.length) {
+        list.innerHTML = '<div class="p-4 text-gray-400">No episodes found</div>';
+        return;
+      }
+
+      list.innerHTML = episodes.map((ep, index) => `
+        <div class="episode-item p-2 sm:p-3 cursor-pointer border-b border-gray-700 hover:bg-gray-700" 
+             data-season="${ep.season}" data-episode="${ep.episode}" data-title="${ep.title}" data-url="${ep.url}">
+          <div class="flex items-center justify-between">
+            <div class="flex-1 min-w-0">
+              <p class="text-xs sm:text-sm font-semibold text-white truncate">S${ep.season}E${ep.episode}</p>
+              <p class="text-xs text-gray-400 truncate leading-tight">${ep.title}</p>
+            </div>
+            <i class="fas fa-play text-gray-500 ml-1 sm:ml-2 text-xs sm:text-sm"></i>
+          </div>
+        </div>
+      `).join('');
+      
+      // Add click listeners
+      document.querySelectorAll('.episode-item').forEach(item => {
+        item.addEventListener('click', function() {
+          playEpisode(this.dataset.season, this.dataset.episode, this.dataset.title, this.dataset.url);
+        });
+      });
+    }
+
+    function playEpisode(season, episode, title, url) {
+      const videoPlayer = document.getElementById('videoPlayer');
+      const drivePlayer = document.getElementById('drivePlayer');
+      const placeholder = document.getElementById('placeholder');
+      const videoLoader = document.getElementById('videoLoader');
+      const episodeInfo = document.getElementById('episodeInfo');
+      const episodeTitle = document.getElementById('episodeTitle');
+      const episodeDetails = document.getElementById('episodeDetails');
+
+      // Update active episode
+      document.querySelectorAll('.episode-item').forEach(item => item.classList.remove('active'));
+      document.querySelector(`[data-season="${season}"][data-episode="${episode}"]`).classList.add('active');
+
+      // Show loader
+      placeholder.classList.add('hidden');
+      videoPlayer.classList.add('hidden');
+      drivePlayer.classList.add('hidden');
+      videoLoader.classList.remove('hidden');
+      episodeInfo.classList.remove('hidden');
+
+      // Process URL based on source
+      let videoUrl = url;
+      let useIframe = false;
+      
+      if (url.includes('drive.google.com/file/d/')) {
+        // Extract the file ID from Google Drive URL
+        const fileId = url.match(/\/d\/([^\/]+)/)?.[1];
+        if (fileId) {
+          // Use the Google Drive embed player for better compatibility
+          videoUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+          useIframe = true;
+        }
+      }
+
+      if (useIframe) {
+        // Use iframe for Google Drive
+        drivePlayer.src = videoUrl;
+        
+        // Hide loader when iframe loads
+        drivePlayer.onload = function() {
+          videoLoader.classList.add('hidden');
+          drivePlayer.classList.remove('hidden');
+        };
+        
+        // Handle iframe errors
+        drivePlayer.onerror = function() {
+          handleVideoError();
+        };
+      } else {
+        // Use regular video player
+        videoPlayer.src = videoUrl;
+        videoPlayer.load();
+        
+        // Hide loader when video can play and start playing
+        videoPlayer.addEventListener('canplay', function() {
+          videoLoader.classList.add('hidden');
+          videoPlayer.classList.remove('hidden');
+          videoPlayer.play();
+        }, { once: true });
+        
+        // Handle video errors
+        videoPlayer.addEventListener('error', function() {
+          handleVideoError();
+        }, { once: true });
+      }
+      
+      function handleVideoError() {
+        videoLoader.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+        placeholder.innerHTML = `
+          <i class="fas fa-exclamation-circle text-4xl sm:text-6xl mb-2 sm:mb-4 text-red-500"></i>
+          <h1 class="text-sm sm:text-lg font-bold mb-2">Video playback error</h1>
+          <p class="text-xs sm:text-base">Unable to load the video. Please try again later.</p>
+        `;
+        console.error('Video error occurred');
+      }
+
+      // Update episode info
+      episodeTitle.textContent = title;
+      episodeDetails.textContent = `Season ${season}, Episode ${episode}`;
+
+      currentEpisode = { season, episode, title, url: videoUrl };
+    }
+
+    function filterEpisodes() {
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+      const seasonFilter = document.getElementById('seasonFilter').value;
+
+      let filtered = allEpisodes;
+
+      if (seasonFilter) {
+        filtered = filtered.filter(ep => ep.season.toString() === seasonFilter);
+      }
+
+      if (searchQuery) {
+        filtered = filtered.filter(ep => 
+          ep.title.toLowerCase().includes(searchQuery) ||
+          `s${ep.season}e${ep.episode}`.toLowerCase().includes(searchQuery)
+        );
+      }
+
+      displayEpisodes(filtered);
+    }
+
+    // Menu dropdown toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const menuDropdown = document.getElementById('menuDropdown');
+    
+    menuBtn?.addEventListener('click', () => {
+      menuDropdown.classList.toggle('hidden');
+    });
+    
+    document.addEventListener('click', (e) => {
+      if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+        menuDropdown.classList.add('hidden');
+      }
+    });
+
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('input', filterEpisodes);
+    document.getElementById('seasonFilter').addEventListener('change', filterEpisodes);
+    document.getElementById('languageSelector').addEventListener('change', function(e) {
+      switchLanguage(e.target.value);
+    });
+
+    // Play first episode when placeholder is clicked
+    document.getElementById('placeholder').addEventListener('click', function() {
+      if (allEpisodes.length > 0) {
+        const firstEp = allEpisodes[0];
+        playEpisode(firstEp.season, firstEp.episode, firstEp.title, firstEp.url);
+      }
+    });
+
+    // Load episodes on page load
+    window.addEventListener('load', loadEpisodes);
+    
+    // Cache management function
+    async function clearCache() {
+      try {
+        // Clear service worker cache
+        if ('caches' in window) {
+          await caches.delete('courage-videos-v1');
+        }
+        
+        // Clear localStorage
+        localStorage.clear();
+        
+        // Clear sessionStorage
+        sessionStorage.clear();
+        
+        // Clear cookies
+        document.cookie.split(';').forEach(function(c) {
+          document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+        });
+        
+        // Reload the page to refresh content
+        window.location.reload(true);
+      } catch (error) {
+        console.error('Error clearing cache:', error);
+        alert('Failed to clear cache. Please try again.');
+      }
+    }
+    
+    // Popup management
+    const cachePopup = document.getElementById('cachePopup');
+    const popupYesBtn = document.getElementById('popupYesBtn');
+    const popupNoBtn = document.getElementById('popupNoBtn');
+    
+    function showCachePopup() {
+      // Show popup
+      cachePopup.classList.add('active');
+    }
+    
+    function hideCachePopup() {
+      cachePopup.classList.remove('active');
+    }
+    
+    // Event listeners for popup
+    popupYesBtn.addEventListener('click', function() {
+      clearCache();
+      hideCachePopup();
+    });
+    
+    popupNoBtn.addEventListener('click', hideCachePopup);
+    
+    // Close popup when clicking outside
+    cachePopup.addEventListener('click', function(e) {
+      if (e.target === cachePopup) {
+        hideCachePopup();
+      }
+    });
+    
+    // Clear cache button functionality
+    document.getElementById('clearCacheBtn').addEventListener('click', function() {
+      showCachePopup();
+    });
+  </script>
+  
+  
+</body>
+</html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courage the Cowardly Dog Trivia Quiz</title>
+    <!-- Google Fonts - Special Elite -->
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Special Elite', cursive; /* Applied Special Elite font */
+            background-color: black; /* Changed to black */
+            min-height: 100vh;
+            padding: 20px;
+            padding-top: 80px; /* Added padding for header */
+            box-sizing: border-box;
+        }
+        .bg-card {
+            background: #333;
+        }
+        .quiz-container {
+            background-color: #fdc3ed; /* Changed to #fdc3ed */
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Adjusted shadow for dark background */
+            padding: 30px;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+        }
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: black; /* Changed to black */
+        }
+        .answer-option {
+            background-color: black; /* Changed to black */
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-align: left;
+            font-size: 1.1rem;
+            color: #fdc3ed; /* Changed to #fdc3ed */
+            border: 2px solid transparent;
+        }
+        .answer-option:hover {
+            background-color: #1a1a1a; /* Darker black for hover */
+            transform: translateY(-2px);
+        }
+        .answer-option.selected {
+            border-color: #fdc3ed; /* Border color from new scheme */
+            background-color: #ffdeff; /* Lighter shade of #fdc3ed for selected */
+            color: black; /* Text color for selected */
+        }
+        .answer-option.correct {
+            background-color: #e0b0e0; /* Shade of #fdc3ed for correct */
+            border-color: black; /* Border color for correct */
+            color: black; /* Text color for correct */
+        }
+        .answer-option.incorrect {
+            background-color: #c090c0; /* Darker shade of #fdc3ed for incorrect */
+            border-color: black; /* Border color for incorrect */
+            color: black; /* Text color for incorrect */
+        }
+        .feedback {
+            margin-top: 15px;
+            font-size: 1rem;
+            color: black; /* Changed to black */
+            text-align: left;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f7fafc; /* Kept light background for readability */
+        }
+        .hint {
+            margin-top: 15px;
+            font-style: italic;
+            color: black; /* Changed to black */
+            font-size: 0.95rem;
+        }
+        .button {
+            background-color: black; /* Changed to black */
+            color: #fdc3ed; /* Changed to #fdc3ed */
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 25px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Adjusted shadow */
+        }
+        .button:hover {
+            background-color: #1a1a1a; /* Darker black for hover */
+            transform: translateY(-1px);
+        }
+        .button:disabled {
+            background-color: #333; /* Lighter black for disabled */
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .score-display {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: black; /* Changed to black */
+            margin-top: 20px;
+        }
+        .restart-button {
+            background-color: black; /* Changed to black */
+        }
+        .restart-button:hover {
+            background-color: #1a1a1a; /* Darker black for hover */
+        }
+    </style>
+</head>
+<body>
+    <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/30 border-b border-white/10 flex items-center justify-between px-4 py-2">
+        <img src="logo.svg" alt="CN Logo" class="h-8 sm:h-10 w-auto flex-shrink-0" />
+        
+        <div class="flex-1 max-w-xs sm:max-w-sm md:max-w-md mx-2 sm:mx-4">
+            <input id="searchInput" type="text" placeholder="Search..." class="w-full px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full bg-card placeholder-gray-400 border border-gray-600 focus:outline-none focus:border-gray-400 text-xs sm:text-sm" style="color:#fdc3ed;">
+        </div>
+        
+        <div class="flex items-center flex-shrink-0 gap-2" style="color:#fdc3ed;">
+            <a href="cookbook/book.html" style="background-color:#fdc3ed;" class="hover:opacity-80 px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-xs sm:text-sm font-semibold transition-colors text-black">Recipe Book</a>
+            <div class="relative">
+                <button id="menuBtn" class="focus:outline-none hover:text-gray-300 p-1">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div id="menuDropdown" class="absolute right-0 mt-2 w-44 sm:w-48 bg-card border border-gray-600 rounded-lg shadow-lg hidden z-50">
+                    <div class="py-1">
+                        <a href="index.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Home</a>
+                        <a href="stream.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Watch Now</a>
+                        <a href="gallery.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Gallery</a>
+                        <a href="lostmedia.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-red-400 hover:bg-gray-700">Lost Media</a>
+                        <a href="cookbook/book.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Recipe Book</a>
+                        <a href="ost.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">O.S.T (Music)</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="quiz-container mx-auto">
+        <h1 class="text-3xl font-extrabold text-blue-700 mb-8" style="color: black;">Courage the Cowardly Dog Trivia Quiz</h1>
+        <div id="quiz-content">
+            <!-- Question and options will be rendered here by JavaScript -->
+        </div>
+        <button id="next-button" class="button mt-6" disabled>Next Question</button>
+    </div>
+
+    <script>
+        const quizData = {
+          "questions": [
+            {
+              "question": "What was creator John R. Dilworth's fundamental instruction to his production team about the series' tone?",
+              "hint": "Think about what makes the show different from other cartoons of its time. It wasn't meant to be just another Saturday morning cartoon.",
+              "answerOptions": [
+                {
+                  "text": "To create 'genuine horror content' rather than a typical children's show.",
+                  "rationale": "This directive was a radical departure from the norms of children's programming and was central to the show's unique identity, blending authentic scares with comedy.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "To focus primarily on slapstick comedy to appeal to a younger audience.",
+                  "rationale": "While the show contains slapstick, its core was a deliberate move towards horror, a much more unconventional approach for the network.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "To produce a show that would serve as a direct parody of classic monster movies.",
+                  "rationale": "The show certainly parodied classic horror, but the creator's core instruction was to create original, genuine horror, not just to parody existing works.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "To develop a narrative centered on complex, serialized storytelling.",
+                  "rationale": "The show did have serialized elements, especially in character development, but the primary instruction from the creator was about establishing its unique horror-comedy tone.",
+                  "isCorrect": false
+                }
+              ]
+            },
+            {
+              "question": "The visual design of the isolated Bagge farmhouse was directly inspired by which famous American painting?",
+              "hint": "The painting features a woman in a field looking towards a house on a hill, evoking a sense of loneliness.",
+              "answerOptions": [
+                {
+                  "text": "Grant Wood's 'American Gothic'",
+                  "rationale": "This painting was the inspiration for the character designs of Muriel and Eustace, not the farmhouse itself.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Andrew Wyeth's 'Christina's World'",
+                  "rationale": "This iconic painting captures a similar feeling of rural isolation and a desolate landscape, which directly influenced the aesthetic of the 'Nowhere' setting.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "Edward Hopper's 'Nighthawks'",
+                  "rationale": "This painting, known for its depiction of urban loneliness, has a very different architectural and emotional style than the rural setting of the show.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Vincent van Gogh's 'The Starry Night'",
+                  "rationale": "While known for its expressive and surreal style, this painting's swirling celestial forms did not serve as the direct model for the Bagge farmhouse.",
+                  "isCorrect": false
+                }
+              ]
+            },
+            {
+              "question": "The voice actor for which central character was changed partway through the series due to the original actor's illness?",
+              "hint": "This character is known for his grumpy demeanor and his signature green mask.",
+              "answerOptions": [
+                {
+                  "text": "Courage",
+                  "rationale": "Marty Grabstein voiced Courage for the entire series run, though Howard Hoffman voiced him in the pilot.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Muriel Bagge",
+                  "rationale": "Thea White was the consistent voice of Muriel throughout all four seasons of the show.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Eustace Bagge",
+                  "rationale": "Lionel Wilson voiced Eustace for the first 33 episodes, with Arthur Anderson taking over for the remainder of the series after Wilson became ill.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "The Computer",
+                  "rationale": "The Computer's distinctively sarcastic, British-accented voice was consistently provided by Simon Prebble.",
+                  "isCorrect": false
+                }
+              ]
+            },
+            {
+              "question": "In the iconic episode 'King Ramses' Curse,' what phrase does the ghostly pharaoh hauntingly repeat?",
+              "hint": "The pharaoh is not asking for treasure or power, but for the return of a specific, stolen item.",
+              "answerOptions": [
+                {
+                  "text": "'Who dares disturb my slumber?'",
+                  "rationale": "This is a common trope in stories about ancient tombs, but it is not the specific, chilling line repeated by King Ramses.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "'Bring me the dog!'",
+                  "rationale": "While many villains target Courage, King Ramses's curse is directed at Eustace because of his greed, not at Courage himself.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "'Suffer my wrath!'",
+                  "rationale": "The pharaoh does inflict plagues as part of his wrath, but his primary demand is for the return of his property.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "'Return the slab.'",
+                  "rationale": "This iconic, terrifying line is central to the episode, as King Ramses demands the return of an ancient artifact Eustace found and kept.",
+                  "isCorrect": true
+                }
+              ]
+            },
+            {
+              "question": "What is the most prominent fan theory that attempts to explain the show's surreal events and why Muriel and Eustace are often oblivious to danger?",
+              "hint": "This theory suggests that reality isn't what it seems, and is filtered through the protagonist's unique point of view.",
+              "answerOptions": [
+                {
+                  "text": "The Post-Apocalyptic Theory",
+                  "rationale": "This theory suggests Nowhere is a post-nuclear wasteland, but it doesn't fully explain why Muriel and Eustace are so frequently unaware of the mutated creatures.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "The Lovecraftian Horror Theory",
+                  "rationale": "This theory posits that Courage is a dormant elder god, but it focuses more on Courage's nature than on the perception of the other characters.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "The 'Dog's Perspective' Theory",
+                  "rationale": "This widely discussed theory posits that the monsters are mundane things (like a mailman) seen through Courage's traumatized, anxious canine perception, explaining his owners' lack of reaction.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "The Purgatory Theory",
+                  "rationale": "This theory suggests the characters are in an afterlife, which could explain the strange events but not specifically why only Courage seems to fully perceive them.",
+                  "isCorrect": false
+                }
+              ]
+            },
+            {
+              "question": "What is the central theme of the series finale, 'Perfect,' as conveyed by the benevolent Fish character?",
+              "hint": "The episode confronts Courage's deepest insecurities about his own abilities and worth.",
+              "answerOptions": [
+                {
+                  "text": "True perfection is achievable through rigorous training and discipline.",
+                  "rationale": "This reflects the perspective of the antagonistic 'Teacher' character, a viewpoint the episode ultimately refutes.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "It is important to embrace one's flaws and imperfections.",
+                  "rationale": "The Fish's climactic line, 'You're not perfect. You're beautiful!', encapsulates the episode's core message of self-acceptance.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "Fear can be completely eliminated with enough courage.",
+                  "rationale": "The series consistently argues that courage is acting despite fear, not the absence of it, a theme solidified in this finale.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "The only way to find peace is to escape from reality.",
+                  "rationale": "The episode encourages confronting one's inner reality and anxieties, rather than escaping from them, as the path to peace.",
+                  "isCorrect": false
+                }
+              ]
+            },
+            {
+              "question": "Which recurring antagonist is a sophisticated, sadistic red cat known for running deadly businesses with a strict 'No Dogs Allowed' policy?",
+              "hint": "This villain is considered Courage's primary nemesis and appears more frequently than any other.",
+              "answerOptions": [
+                {
+                  "text": "Le Quack",
+                  "rationale": "Le Quack is a French duck and a con artist, but he is not a cat and doesn't have a 'No Dogs Allowed' rule.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "The Cajun Fox",
+                  "rationale": "The Cajun Fox is a predator who hunts for stew ingredients, but he is not a cat and operates in a less formal, business-like manner.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Katz",
+                  "rationale": "With his suave demeanor, sinister businesses like the 'Katz Motel,' and explicit hatred for dogs, Katz is Courage's most iconic and frequent foe.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "Mad Dog",
+                  "rationale": "Mad Dog is the abusive gangster from the episode 'The Mask' and is a canine himself, not a cat.",
+                  "isCorrect": false
+                }
+              ]
+            },
+            {
+              "question": "The episode 'The Mask' is notable for its unusually direct exploration of what mature social issue?",
+              "hint": "The episode features two female characters, Kitty and Bunny, and their relationship with a threatening male character named Mad Dog.",
+              "answerOptions": [
+                {
+                  "text": "Environmental pollution",
+                  "rationale": "Environmental themes were explored in other episodes like 'Conway the Contaminationist,' but not in 'The Mask.'",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Domestic abuse",
+                  "rationale": "The episode reveals that Kitty is protecting her friend Bunny from an abusive relationship with the gangster Mad Dog, a remarkably direct portrayal for a children's show.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "The dangers of technology",
+                  "rationale": "This theme was more central to episodes involving Courage's Computer or characters like Robot Randy.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Critiques of capitalism",
+                  "rationale": "Villains like Katz often embodied predatory business practices, but 'The Mask' focused on interpersonal relationships and abuse.",
+                  "isCorrect": false
+                }
+              ]
+            },
+            {
+              "question": "What was the title of the original 1996 pilot episode that earned an Academy Award nomination?",
+              "hint": "This episode introduced Courage's very first nemesis, who was an extraterrestrial of the avian variety.",
+              "answerOptions": [
+                {
+                  "text": "'A Night at the Katz Motel'",
+                  "rationale": "This was the first episode of the full series to air, but it was not the original, standalone pilot.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "'The Great Fusilli'",
+                  "rationale": "This was the dark and memorable finale of the first season, not the pilot.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "'The Chicken from Outer Space'",
+                  "rationale": "This was the original short film that introduced the world to Courage and was nominated for an Academy Award, leading to the creation of the full series.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "'Remembrance of Courage Past'",
+                  "rationale": "This episode revealed Courage's backstory, but it aired late in the series' final season.",
+                  "isCorrect": false
+                }
+              ]
+            },
+            {
+              "question": "Which episode provides crucial insight into Eustace Bagge's grumpy personality by revealing his own traumatic childhood and relationship with his mother?",
+              "hint": "The episode's plot revolves around a specific family holiday.",
+              "answerOptions": [
+                {
+                  "text": "'The Great Fusilli'",
+                  "rationale": "This episode focuses on Eustace and Muriel being turned into puppets, exploring themes of control, not Eustace's past trauma.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "'Farmer-Hunter, Farmer-Hunted'",
+                  "rationale": "This episode explores Eustace's love for hunting but does not delve into the origins of his personality.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "'Mother's Day'",
+                  "rationale": "This episode is centered on a visit to Eustace's mother, revealing her preference for his brother and her abusive treatment of Eustace, which explains his deep-seated insecurities.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "'The Clutching Foot'",
+                  "rationale": "This episode focuses on body horror related to Eustace's foot fungus, not the psychological roots of his behavior.",
+                  "isCorrect": false
+                }
+              ]
+            }
+          ]
+        };
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        let quizActive = true; // Flag to control quiz state
+
+        const quizContent = document.getElementById('quiz-content');
+        const nextButton = document.getElementById('next-button');
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function displayQuestion() {
+            if (currentQuestionIndex >= quizData.questions.length) {
+                showResults();
+                return;
+            }
+
+            const question = quizData.questions[currentQuestionIndex];
+            selectedOption = null;
+            nextButton.disabled = true; // Disable next button until an option is selected
+
+            let html = `
+                <div class="question-text">${question.question}</div>
+                <div id="options-container">
+            `;
+
+            const shuffledOptions = shuffleArray([...question.answerOptions]); // Shuffle options for each question
+
+            shuffledOptions.forEach((option, index) => {
+                html += `
+                    <div class="answer-option" data-index="${index}" data-correct="${option.isCorrect}">
+                        ${option.text}
+                    </div>
+                `;
+            });
+
+            html += `
+                </div>
+                <div id="feedback-area" class="feedback hidden"></div>
+                <div class="hint">${question.hint}</div>
+            `;
+            quizContent.innerHTML = html;
+
+            document.querySelectorAll('.answer-option').forEach(optionElement => {
+                optionElement.addEventListener('click', selectAnswer);
+            });
+        }
+
+        function selectAnswer(event) {
+            if (!quizActive || selectedOption !== null) { // Prevent multiple selections or selection after quiz ends
+                return;
+            }
+
+            // Remove 'selected' class from previously selected option
+            if (selectedOption) {
+                selectedOption.classList.remove('selected');
+            }
+
+            selectedOption = event.target;
+            selectedOption.classList.add('selected');
+            nextButton.disabled = false; // Enable next button
+
+            // Immediately show feedback
+            const isCorrect = selectedOption.dataset.correct === 'true';
+            const feedbackArea = document.getElementById('feedback-area');
+            const question = quizData.questions[currentQuestionIndex];
+            const selectedOptionData = question.answerOptions.find(opt => opt.text === selectedOption.textContent.trim());
+
+            // Apply correct/incorrect styling to the selected option
+            if (isCorrect) {
+                selectedOption.classList.add('correct');
+                score++;
+            } else {
+                selectedOption.classList.add('incorrect');
+                // Find the correct answer and highlight it
+                const correctOptionText = question.answerOptions.find(opt => opt.isCorrect).text;
+                document.querySelectorAll('.answer-option').forEach(optEl => {
+                    if (optEl.textContent.trim() === correctOptionText) {
+                        optEl.classList.add('correct');
+                    }
+                });
+            }
+
+            feedbackArea.textContent = selectedOptionData.rationale;
+            feedbackArea.classList.remove('hidden');
+
+            // Disable all options after selection
+            document.querySelectorAll('.answer-option').forEach(optionElement => {
+                optionElement.removeEventListener('click', selectAnswer);
+                optionElement.style.pointerEvents = 'none'; // Visually disable
+            });
+        }
+
+        function nextQuestion() {
+            if (selectedOption === null && currentQuestionIndex < quizData.questions.length) {
+                // If no option is selected and it's not the end, do nothing
+                return;
+            }
+
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+
+        function showResults() {
+            quizActive = false; // Deactivate quiz
+            quizContent.innerHTML = `
+                <div class="score-display">You scored ${score} out of ${quizData.questions.length}!</div>
+                <p class="text-gray-700 mt-4" style="color: black;">Thanks for taking the quiz!</p>
+            `;
+            nextButton.textContent = 'Restart Quiz';
+            nextButton.classList.add('restart-button');
+            nextButton.disabled = false; // Enable restart button
+            nextButton.removeEventListener('click', nextQuestion);
+            nextButton.addEventListener('click', restartQuiz);
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            quizActive = true;
+            nextButton.textContent = 'Next Question';
+            nextButton.classList.remove('restart-button');
+            nextButton.removeEventListener('click', restartQuiz);
+            nextButton.addEventListener('click', nextQuestion);
+            displayQuestion();
+        }
+
+        // Initial display
+        displayQuestion();
+        nextButton.addEventListener('click', nextQuestion);
+        
+        // Menu dropdown toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const menuDropdown = document.getElementById('menuDropdown');
+        
+        menuBtn?.addEventListener('click', () => {
+            menuDropdown.classList.toggle('hidden');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (menuBtn && !menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+                menuDropdown.classList.add('hidden');
+            }
+        });
+        
+        menuDropdown?.addEventListener('click', (e) => {
+            if (e.target.classList.contains('nav-item')) {
+                menuDropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muriel's Farmhouse Cookbook | Courage the Cowardly Dog</title>
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="Muriel's Farmhouse Cookbook - Recipes from Nowhere, Kansas. Discover magical recipes from Courage the Cowardly Dog episodes.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../video-protection.js"></script>
+    <script src="../media-protection.js"></script>
+    <script src="../network-protection.js"></script>
+    <script src="../dev-detector.js"></script>
+    <script src="../pwa-install.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <style>
+        body { overflow-x: hidden; }
+        .bg-card { background: #333; }
+        .bg-card-opacity { background: rgba(51, 51, 51, 0.5); }
+        .shimmer { position: relative; overflow: hidden; }
+        .shimmer::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); animation: shimmer 2s infinite; }
+        @keyframes shimmer { 0% { left: -100%; } 100% { left: 100%; } }
+        .cookbook-bg { background: linear-gradient(135deg, #000 0%, #333 100%); }
+        .recipe-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .recipe-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(253, 195, 237, 0.2); }
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+        .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s ease; }
+        .btn--primary { background: #fdc3ed; color: #000; }
+        .btn--primary:hover { background: #f8a2dc; }
+        .btn--secondary { background: transparent; color: #fdc3ed; border: 2px solid #fdc3ed; }
+        .btn--secondary:hover { background: #fdc3ed; color: #000; }
+        .btn--outline { background: transparent; color: #fdc3ed; border: 1px solid #fdc3ed; padding: 8px 16px; }
+        .btn--outline:hover { background: #fdc3ed; color: #000; }
+        .btn--lg { padding: 16px 32px; font-size: 18px; }
+        .welcome-hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; padding: 80px 20px 20px; }
+        .welcome-content { text-align: center; max-width: 800px; z-index: 2; }
+        .cookbook-title { font-size: 3.5rem; color: #fdc3ed; margin-bottom: 1rem; }
+        .cookbook-subtitle { font-size: 1.5rem; color: #ccc; margin-bottom: 2rem; }
+        .cookbook-description { font-size: 1.1rem; color: #ddd; margin-bottom: 3rem; line-height: 1.6; }
+        .farmhouse-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; }
+        .farmhouse-image { width: 100%; height: 100%; object-fit: cover; opacity: 0.3; }
+        @media (max-width: 768px) {
+            .cookbook-title { font-size: 2.5rem; }
+            .cookbook-subtitle { font-size: 1.2rem; }
+            .cookbook-description { font-size: 1rem; }
+            .btn--lg { padding: 12px 24px; font-size: 16px; }
+        }
+    </style>
+</head>
+<body class="bg-black text-white" style="font-family: 'Special Elite', monospace;">
+    <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/30 border-b border-white/10 flex items-center justify-between px-4 py-2">
+        <img src="../logo.svg" alt="CN Logo" class="h-8 sm:h-10 w-auto flex-shrink-0" />
+        
+        <div class="flex-1 max-w-xs sm:max-w-sm md:max-w-md mx-2 sm:mx-4">
+            <input id="searchInput" type="text" placeholder="Search recipes..." class="w-full px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full bg-card placeholder-gray-400 border border-gray-600 focus:outline-none focus:border-gray-400 text-xs sm:text-sm" style="color:#fdc3ed;">
+        </div>
+        
+        <div class="flex items-center flex-shrink-0 gap-2" style="color:#fdc3ed;">
+            <button class="focus:outline-none hover:text-gray-300 p-1" onclick="showRecipeBrowser()">
+                <i class="fas fa-book text-sm sm:text-base"></i>
+            </button>
+            <div class="relative">
+                <button id="menuBtn" class="focus:outline-none hover:text-gray-300 p-1">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div id="menuDropdown" class="absolute right-0 mt-2 w-44 sm:w-48 bg-card border border-gray-600 rounded-lg shadow-lg hidden z-50">
+                    <div class="py-1">
+                        <a href="../index.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Home</a>
+                        <a href="../stream.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Watch Now</a>
+                        <a href="../gallery.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Gallery</a>
+                        <a href="../lostmedia.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-red-400 hover:bg-gray-700">Lost Media</a>
+                        <a href="../cookbook/book.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Recipe Book</a>
+                        <a href="../ost.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">O.S.T (Music)</a>
+                        <a href="../index.html#characters" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Characters</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb Navigation -->
+    <nav class="pt-16 sm:pt-20 md:pt-24 px-4 py-2 text-sm text-gray-400">
+        <ol class="flex items-center space-x-2">
+            <li><a href="../index.html" class="hover:text-white">Home</a></li>
+            <li>/</li>
+            <li class="text-white">Cookbook</li>
+        </ol>
+    </nav>
+
+    <div class="app-container">
+        <!-- Welcome Page -->
+        <div id="welcome-page" class="page-section active">
+            <div class="welcome-hero cookbook-bg">
+                <div class="farmhouse-bg">
+                    <img src="../assets/recipeBookBg.jpg" alt="Bagge Farmhouse" class="farmhouse-image" loading="lazy">
+                </div>
+                <div class="welcome-content">
+                    <h1 class="cookbook-title">Muriel's Farmhouse Cookbook</h1>
+                    <p class="cookbook-subtitle">Recipes from Nowhere, Kansas</p>
+                    <p class="cookbook-description">Step into Muriel's kitchen and discover the magical recipes that have appeared throughout the adventures of Courage the Cowardly Dog. From the famous Happy Plums to Little Muriel's extravagant macaroni and cheese, this cookbook brings you all the culinary delights from the middle of Nowhere!</p>
+                    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn btn--primary btn--lg enter-kitchen-btn" onclick="showRecipeBrowser()">Enter the Kitchen</button>
+                        <button class="btn btn--secondary btn--lg back-home-btn" onclick="window.location.href='../index.html'">Back to Home</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recipe Browser -->
+        <div id="recipe-browser" class="page-section">
+            <main class="px-2 sm:px-4 md:px-6 pt-2">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    <div>
+                        <h1 class="text-white font-bold text-xl sm:text-2xl mb-2" style="color: #fdc3ed;">Muriel's Recipe Collection</h1>
+                        <p class="text-gray-400 text-sm sm:text-base">Browse through Muriel's famous recipes from the show</p>
+                    </div>
+                    <button class="btn btn--secondary" onclick="showWelcomePage()">← Back to Welcome</button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                    <div class="flex-1">
+                        <input type="text" id="recipe-search" class="w-full px-3 py-2 rounded-lg bg-card placeholder-gray-400 border border-gray-600 focus:outline-none focus:border-gray-400 text-sm" placeholder="Search recipes or episodes..." style="color:#fdc3ed;">
+                    </div>
+                    <select id="category-filter" class="px-3 py-2 rounded-lg bg-card border border-gray-600 focus:outline-none focus:border-gray-400 text-sm" style="color:#fdc3ed;">
+                        <option value="">All Categories</option>
+                        <option value="desserts">Desserts</option>
+                        <option value="main-dishes">Main Dishes</option>
+                        <option value="sides">Sides</option>
+                        <option value="special">Special</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="recipes-grid">
+                    <!-- Recipe cards will be populated by JavaScript -->
+                </div>
+            </main>
+        </div>
+
+        <!-- Recipe Detail Page -->
+        <div id="recipe-detail" class="page-section">
+            <main class="px-2 sm:px-4 md:px-6 pt-2">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    <button class="btn btn--secondary" onclick="showRecipeBrowser()">← Back to Recipes</button>
+                    <div class="flex gap-2">
+                        <button class="btn btn--outline" onclick="showScaleModal()">
+                            <i class="fas fa-balance-scale mr-2"></i>Scale Recipe
+                        </button>
+                        <button class="btn btn--outline" onclick="printRecipe()">
+                            <i class="fas fa-print mr-2"></i>Print
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-card-opacity rounded-lg p-4 sm:p-6 mb-6">
+                    <h1 id="recipe-name" class="text-2xl sm:text-3xl font-bold mb-4" style="color: #fdc3ed;"></h1>
+                    <div class="flex flex-wrap gap-4 mb-4">
+                        <span class="episode-badge bg-purple-600 text-white px-3 py-1 rounded-full text-sm" id="recipe-episode"></span>
+                        <div class="flex gap-4 text-sm text-gray-300">
+                            <span>👥 <span id="recipe-servings"></span> servings</span>
+                            <span>⏱️ <span id="recipe-prep-time"></span> prep</span>
+                            <span>🔥 <span id="recipe-cook-time"></span> cook</span>
+                        </div>
+                    </div>
+                    <p id="recipe-description" class="text-gray-300 mb-6 leading-relaxed"></p>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-card rounded-lg p-4">
+                            <h3 class="text-lg font-semibold mb-4" style="color: #fdc3ed;">Ingredients</h3>
+                            <ul id="ingredients-list" class="space-y-2 text-sm">
+                                <!-- Ingredients will be populated by JavaScript -->
+                            </ul>
+                        </div>
+
+                        <div class="bg-card rounded-lg p-4">
+                            <h3 class="text-lg font-semibold mb-4" style="color: #fdc3ed;">Instructions</h3>
+                            <ol id="instructions-list" class="space-y-3 text-sm">
+                                <!-- Instructions will be populated by JavaScript -->
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 bg-card rounded-lg p-4">
+                        <h3 class="text-lg font-semibold mb-3" style="color: #fdc3ed;">Muriel's Tip</h3>
+                        <div class="bg-yellow-900/30 border-l-4 border-yellow-500 p-3 rounded">
+                            <div id="muriel-tip" class="text-yellow-200 text-sm italic">
+                                <!-- Muriel's tip will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card-opacity rounded-lg p-4 sm:p-6">
+                    <h4 class="text-lg font-semibold mb-4" style="color: #fdc3ed;">More Recipes</h4>
+                    <div id="recipe-nav-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <!-- Navigation links will be populated by JavaScript -->
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Scale Modal -->
+        <div id="scale-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+            <div class="bg-card rounded-lg p-6 max-w-md w-full mx-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold" style="color: #fdc3ed;">Scale Recipe</h3>
+                    <button class="text-gray-400 hover:text-white" onclick="closeScaleModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Number of servings:</label>
+                    <input type="number" id="scale-servings" class="w-full px-3 py-2 bg-black border border-gray-600 rounded-lg focus:outline-none focus:border-gray-400" min="1" max="50" value="4" style="color:#fdc3ed;">
+                </div>
+                <div class="flex gap-3">
+                    <button class="btn btn--primary flex-1" onclick="applyScale()">Apply Scale</button>
+                    <button class="btn btn--secondary flex-1" onclick="closeScaleModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Menu dropdown functionality
+        document.getElementById('menuBtn').addEventListener('click', function() {
+            const dropdown = document.getElementById('menuDropdown');
+            dropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const menuBtn = document.getElementById('menuBtn');
+            const dropdown = document.getElementById('menuDropdown');
+            
+            if (!menuBtn.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            // Add search functionality here if needed
+        });
+
+        // Recipe search functionality
+        document.getElementById('recipe-search')?.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            // Add recipe search functionality here
+        });
+    </script>
+</body>
+</html>
