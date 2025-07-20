@@ -18,6 +18,14 @@
     .accent-bg,.horror-accent-bg,.love-accent-bg{background:#333}
     .accent-text,.horror-accent-text,.love-accent-text{color:#fdc3ed}
     .nav-item.active{border-bottom:2px solid #fdc3ed;color:#fdc3ed}
+    /* Gallery image styles */
+    .gallery-img-container {
+      background-color: #0a0a0a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
     @media(max-width:768px){
       .text-3xl{font-size:1.5rem}
       .text-4xl{font-size:1.875rem}
@@ -59,8 +67,13 @@
 
   <main class="pt-16 p-8">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
-      <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight accent-text leading-tight">Character Gallery</h1>
+      
       <p class="mt-4 max-w-3xl mx-auto text-center text-secondary">Explore the complete collection of characters from Courage the Cowardly Dog.</p>
+      <div class="mt-4 flex justify-center gap-2">
+        <button id="aspect-4-3" class="px-3 py-1 bg-pink-200 text-black rounded-md text-sm font-bold active">4:3</button>
+        <button id="aspect-16-9" class="px-3 py-1 bg-gray-700 text-pink-200 rounded-md text-sm font-bold">16:9</button>
+        <button id="aspect-1-1" class="px-3 py-1 bg-gray-700 text-pink-200 rounded-md text-sm font-bold">1:1</button>
+      </div>
     </div>
     <div id="card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
       <!-- Cards will be dynamically generated here -->
@@ -150,9 +163,9 @@
           const card = document.createElement('div');
           card.className = `flex flex-col border border-black bg-pink-200 h-full`;
           
-          // Create image container
+          // Create image container with 4:3 aspect ratio
           const imgContainer = document.createElement('div');
-          imgContainer.className = 'w-full aspect-square overflow-hidden';
+          imgContainer.className = 'w-full aspect-[4/3] overflow-hidden gallery-img-container';
           
           // Create image element
           const img = document.createElement('img');
@@ -167,7 +180,7 @@
             img.src = '';
           }
           img.alt = character.Name || '';
-          img.className = 'w-full h-full object-cover';
+          img.className = 'w-full h-full object-contain';
           imgContainer.appendChild(img);
           
           // Create content container
@@ -215,6 +228,55 @@
           menuDropdown.classList.add('hidden');
         }
       });
+      
+      // Aspect ratio toggle functionality
+      const aspect43Btn = document.getElementById('aspect-4-3');
+      const aspect169Btn = document.getElementById('aspect-16-9');
+      const aspect11Btn = document.getElementById('aspect-1-1');
+      
+      function updateAspectRatio(ratio) {
+        const imgContainers = document.querySelectorAll('.gallery-img-container');
+        
+        // Update button styles
+        [aspect43Btn, aspect169Btn, aspect11Btn].forEach(btn => {
+          btn.classList.remove('bg-pink-200', 'text-black');
+          btn.classList.add('bg-gray-700', 'text-pink-200');
+        });
+        
+        // Set active button
+        const activeBtn = document.getElementById(`aspect-${ratio.replace('/', '-')}`);
+        if (activeBtn) {
+          activeBtn.classList.remove('bg-gray-700', 'text-pink-200');
+          activeBtn.classList.add('bg-pink-200', 'text-black');
+        }
+        
+        // Update all image containers
+        imgContainers.forEach(container => {
+          // Remove existing aspect ratio classes
+          container.classList.remove('aspect-[4/3]', 'aspect-[16/9]', 'aspect-square');
+          
+          // Add new aspect ratio class
+          if (ratio === '4/3') {
+            container.classList.add('aspect-[4/3]');
+          } else if (ratio === '16/9') {
+            container.classList.add('aspect-[16/9]');
+          } else if (ratio === '1/1') {
+            container.classList.add('aspect-square');
+          }
+        });
+        
+        // Save preference to localStorage
+        localStorage.setItem('preferredAspectRatio', ratio);
+      }
+      
+      // Set up event listeners for aspect ratio buttons
+      aspect43Btn?.addEventListener('click', () => updateAspectRatio('4/3'));
+      aspect169Btn?.addEventListener('click', () => updateAspectRatio('16/9'));
+      aspect11Btn?.addEventListener('click', () => updateAspectRatio('1/1'));
+      
+      // Load saved preference or default to 4:3
+      const savedRatio = localStorage.getItem('preferredAspectRatio') || '4/3';
+      updateAspectRatio(savedRatio);
       
       // Header search functionality
       const headerSearch = document.getElementById('headerSearch');
