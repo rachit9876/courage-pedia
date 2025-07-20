@@ -1,273 +1,48 @@
-<!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <title>Courage the Cowardly Dog Images Gallery</title>
-  <meta name="description" content="Browse Courage the Cowardly Dog image gallery with screenshots from episodes.">
-  <meta name="keywords" content="courage images, courage screenshots, courage gallery, cartoon images">
-  <meta name="robots" content="index, follow">
-  <meta property="og:title" content="Courage the Cowardly Dog Gallery">
-  <meta property="og:description" content="Image gallery with Courage episodes screenshots">
-  <link rel="canonical" href="https://yoursite.com/gallery.html">
-  <link rel="manifest" href="manifest.json">
-
-
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Character Cards</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="pwa-install.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <style>
-   body{overflow-x:hidden}
-   .bg-card{background:#333}.bg-card-opacity{background:rgba(51,51,51,.5)}
-   .shimmer{position:relative;overflow:hidden}
-   .shimmer::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:shimmer 2s infinite}
-   @keyframes shimmer{0%{left:-100%}100%{left:100%}}
-   .error-img{background:#333;display:flex;align-items:center;justify-content:center;color:#666;font-size:1.5rem}
-   img{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-user-drag:none;-webkit-touch-callout:none;pointer-events:auto}
-   .media-container{position:relative;overflow:hidden}
-   @media(max-width:768px){
-    .px-4{padding-left:0.75rem;padding-right:0.75rem}
-    .gap-1{gap:0.25rem}
-    .gap-4{gap:0.75rem}
-    .p-4{padding:0.75rem}
-    .text-xs{font-size:0.7rem}
-    .text-sm{font-size:0.8rem}
-    .error-img{font-size:1.2rem}
-   }
-   @media(max-width:480px){
-    .px-4{padding-left:0.5rem;padding-right:0.5rem}
-    .gap-1{gap:0.125rem}
-    .p-4{padding:0.5rem}
-    .text-xs{font-size:0.65rem}
-    .w-16{width:3rem}
-    .h-16{height:3rem}
-    .error-img{font-size:1rem}
-   }
-  </style>
- </head>
- <body class="bg-black text-white" style="font-family: 'Special Elite', monospace;">
-    <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/30 border-b border-white/10 flex items-center justify-between px-4 py-2">
-        <img src="logo.svg" alt="CN Logo" class="h-8 sm:h-10 w-auto flex-shrink-0" />
-        
-        <div class="flex-1 max-w-xs sm:max-w-sm md:max-w-md mx-2 sm:mx-4">
-            <input id="searchInput" type="text" placeholder="Search..." class="w-full px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full bg-card placeholder-gray-400 border border-gray-600 focus:outline-none focus:border-gray-400 text-xs sm:text-sm" style="color:#fdc3ed;">
-        </div>
-        
-        <div class="flex items-center flex-shrink-0 gap-2" style="color:#fdc3ed;">
-            <button class="focus:outline-none hover:text-gray-300 p-1" onclick="toggleGridView()">
-                <i id="gridIcon" class="fas fa-th text-sm sm:text-base"></i>
-            </button>
-            <a href="cookbook/book.html" style="background-color:#fdc3ed;" class="hover:opacity-80 px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-xs sm:text-sm font-semibold transition-colors text-black">Recipe Book</a>
-            <div class="relative">
-                <button id="menuBtn" class="focus:outline-none hover:text-gray-300 p-1">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-                <div id="menuDropdown" class="absolute right-0 mt-2 w-44 sm:w-48 bg-card border border-gray-600 rounded-lg shadow-lg hidden z-50">
-                    <div class="py-1">
-                        <a href="index.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Home</a>
-                        <a href="stream.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Watch Now</a>
-                        <a href="gallery.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Gallery</a>
-                        <a href="lostmedia.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-red-400 hover:bg-gray-700">Lost Media</a>
-                        <a href="cookbook/book.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Recipe Book</a>
-                        <a href="ost.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">O.S.T (Music)</a>
-                        <a href="index.html#characters" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Characters</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-  <!-- Breadcrumb Navigation -->
-  <nav class="pt-16 sm:pt-20 md:pt-24 px-4 py-2 text-sm text-gray-400">
-    <ol class="flex items-center space-x-2">
-      <li><a href="index.html" class="hover:text-white">Home</a></li>
-      <li>/</li>
-      <li class="text-white">Gallery</li>
-    </ol>
-  </nav>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  />
+</head>
+<body class="bg-black p-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+  <!-- First card -->
+  <div class="flex flex-col border border-blue-400 bg-pink-200 h-full">
+    <div class="bg-gray-600 w-full h-48"></div>
+    <div class="p-6">
+      <h2 class="font-extrabold text-xl">Name</h2>
+      <p class="border border-blue-400 inline-block mt-2 p-2 font-semibold leading-snug">
+        it is the charcter which was shown in wall paer of the sereies
+      </p>
+    </div>
+  </div>
 
-  <main class="px-2 sm:px-4 md:px-6 pt-2">
-   <h1 class="text-white font-bold mb-2 text-lg sm:text-xl px-1">
-    Courage the Cowardly Dog Gallery
-   </h1>
+  <!-- Second card -->
+  <div class="flex flex-col border border-black bg-pink-200 h-full">
+    <div class="bg-gray-600 w-full h-48"></div>
+    <div class="p-6">
+      <h2 class="font-extrabold text-xl">Name</h2>
+      <p class="font-semibold leading-snug mt-2">
+        it is the charcter which was shown in wall paer of the sereies
+      </p>
+    </div>
+  </div>
 
-   <div id="mediaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1 sm:gap-2 mb-4">
-   </div>
-  </main>
-  <script>
-    let isListView = false;
-    let filterActive = false;
-    let allEntries = [];
-
-    async function loadImages() {
-      try {
-        const response = await fetch('CSV/gallery.csv');
-        if (!response.ok) throw new Error('Failed to load image data');
-        const text = await response.text();
-        const lines = text.split('\n').slice(1);
-        allEntries = lines.filter(line => line.trim()).map(line => {
-          const parts = line.match(/([^,]+),([^,]+),"([^"]+)",([^,]+)/);
-          if (parts) {
-            const [, filename, path, tags, category] = parts;
-            return `assets/${filename}|${category}|${tags}`;
-          }
-          return null;
-        }).filter(entry => entry);
-        displayImages(allEntries);
-      } catch (error) {
-        console.error('Error loading images:', error);
-        document.getElementById('mediaGrid').innerHTML = '<div class="col-span-full text-center text-red-400 p-8">Failed to load images</div>';
-      }
-    }
-
-    function displayImages(entries) {
-      const grid = document.getElementById('mediaGrid');
-      if (!entries.length) {
-        grid.innerHTML = '<div class="col-span-full text-center text-gray-400 p-8">No images found</div>';
-        return;
-      }
-      
-      grid.innerHTML = entries.map((entry, index) => {
-        const [url, category, tags] = entry.trim().split('|');
-        const hashTags = tags ? tags.split(',').map(tag => `#${tag.trim()}`).join(' ') : '';
-        
-        if (isListView) {
-          return `
-            <div class="flex items-center gap-2 sm:gap-4 p-2 sm:p-4 bg-card-opacity rounded-lg">
-              <div class="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 bg-card-opacity rounded-lg animate-pulse shimmer" data-src="${url}" data-alt="${category || `Photo ${index + 1}`}">
-                <div class="error-img w-12 h-12 sm:w-16 sm:h-16 rounded-lg hidden">📷</div>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-xs sm:text-sm text-white font-semibold truncate">${category || `Photo ${index + 1}`}</p>
-                <p class="text-xs text-gray-400 truncate">${hashTags}</p>
-              </div>
-            </div>
-          `;
-        } else {
-          return `
-            <div class="flex flex-col">
-              <div class="media-container">
-                <div class="w-full aspect-square bg-card-opacity rounded-lg animate-pulse shimmer" data-src="${url}" data-alt="${category || `Photo ${index + 1}`}">
-                  <div class="error-img w-full aspect-square rounded-lg hidden">📷</div>
-                </div>
-
-              </div>
-              <p class="text-xs text-gray-400 mt-1 truncate">${hashTags}</p>
-            </div>
-          `;
-        }
-      }).join('');
-      
-      // Lazy load images
-      lazyLoadImages();
-    }
-    
-    function lazyLoadImages() {
-      const imageContainers = document.querySelectorAll('[data-src]');
-      const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const container = entry.target;
-            const img = new Image();
-            img.src = container.dataset.src;
-            img.alt = container.dataset.alt;
-            img.className = isListView ? 'w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg' : 'aspect-square object-contain bg-card-opacity rounded-lg';
-            
-            img.onload = () => {
-              container.innerHTML = '';
-              container.appendChild(img);
-              container.classList.remove('animate-pulse', 'shimmer');
-            };
-            
-            img.onerror = () => {
-              container.innerHTML = isListView ? '<div class="error-img w-12 h-12 sm:w-16 sm:h-16 rounded-lg">📷</div>' : '<div class="error-img aspect-square rounded-lg">📷</div>';
-              container.classList.remove('animate-pulse', 'shimmer');
-            };
-            
-            imageObserver.unobserve(container);
-          }
-        });
-      });
-      
-      imageContainers.forEach(container => imageObserver.observe(container));
-    }
-
-    let searchTimeout;
-    function searchImages(query) {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        if (!query.trim()) {
-          displayImages(allEntries);
-          return;
-        }
-        
-        const lowerQuery = query.toLowerCase();
-        const filtered = allEntries.filter(entry => {
-          const [url, category, tags] = entry.trim().split('|');
-          return (category?.toLowerCase().includes(lowerQuery)) ||
-                 (tags?.toLowerCase().includes(lowerQuery));
-        });
-        
-        displayImages(filtered);
-      }, 300);
-    }
-
-    function toggleGridView() {
-      const grid = document.getElementById('mediaGrid');
-      const icon = document.getElementById('gridIcon');
-      
-      isListView = !isListView;
-      
-      if (isListView) {
-        grid.className = 'flex flex-col gap-2 mb-4';
-        icon.className = 'fas fa-list';
-      } else {
-        grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1 mb-4';
-        icon.className = 'fas fa-th';
-      }
-    }
-
-    // Menu dropdown toggle
-    const menuBtn = document.getElementById('menuBtn');
-    const menuDropdown = document.getElementById('menuDropdown');
-    
-    menuBtn?.addEventListener('click', () => {
-      menuDropdown.classList.toggle('hidden');
-    });
-    
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
-        menuDropdown.classList.add('hidden');
-      }
-    });
-    
-    menuDropdown?.addEventListener('click', (e) => {
-      if (e.target.classList.contains('nav-item')) {
-        menuDropdown.classList.add('hidden');
-      }
-    });
-
-    // Load images when page loads
-    window.addEventListener('load', loadImages);
-    
-    // Add optimized search functionality
-    const searchInput = document.getElementById('searchInput');
-    searchInput?.addEventListener('input', (e) => {
-      searchImages(e.target.value);
-    });
-    
-    // Add keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.key === 'f') {
-        e.preventDefault();
-        searchInput?.focus();
-      }
-    });
-  </script>
- </body>
+  <!-- Third card -->
+  <div class="flex flex-col border border-black bg-pink-200 h-full">
+    <div class="bg-gray-600 w-full h-48"></div>
+    <div class="p-6">
+      <h2 class="font-extrabold text-xl">Name</h2>
+      <p class="font-semibold leading-snug mt-2">
+        it is the charcter which was shown in wall paer of the sereies
+      </p>
+    </div>
+  </div>
+  </div>
+</body>
 </html>

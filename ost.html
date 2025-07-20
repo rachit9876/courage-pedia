@@ -3,16 +3,13 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <title>Courage OST Player</title>
+  <title>Content Removed</title>
   <meta name="robots" content="noindex, nofollow">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Special+Elite&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
-  <script src="media-protection.js"></script>
-  <script src="network-protection.js"></script>
-  <script src="dev-detector.js"></script>
   <script src="pwa-install.js"></script>
   <style>
    body{overflow-x:hidden}
@@ -113,275 +110,30 @@
     </ol>
   </nav>
 
-  <main class="flex flex-col lg:flex-row min-h-screen">
-    <!-- Audio Player -->
-    <div class="flex-1 bg-black flex items-center justify-center p-2 sm:p-4">
-      <div class="w-full max-w-3xl">
-        <div id="audioContainer" class="yt-player-container aspect-video bg-card-opacity rounded-lg flex items-center justify-center">
-          <div id="placeholder" class="text-center yt-text-secondary px-4">
-            <i class="fas fa-music text-4xl sm:text-6xl mb-2 sm:mb-4"></i>
-            <h1 class="text-sm sm:text-lg font-bold mb-2">Courage OST Collection</h1>
-            <p class="text-xs sm:text-base">Select a track to start listening</p>
-          </div>
-          <div id="audioLoader" role="status" class="w-full h-full shimmer hidden">
-            <span class="sr-only">Loading audio...</span>
-          </div>
-          <div id="audioPlayerContainer" class="w-full h-full flex flex-col items-center justify-center p-4 sm:p-8 hidden">
-            <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-lg overflow-hidden mb-4 sm:mb-6">
-              <img src="assets/music.jpg" alt="Music" class="w-full h-full object-cover" id="currentTrackThumbnail">
-            </div>
-            <div class="text-center mb-6 sm:mb-8">
-              <h2 id="currentTrackTitle" class="text-lg sm:text-2xl font-medium mb-2"></h2>
-              <p id="currentTrackTags" class="yt-text-secondary text-sm sm:text-base"></p>
-            </div>
-            <audio id="audioPlayer" class="w-full rounded-lg" controls controlsList="nodownload">
-              Your browser does not support the audio tag.
-            </audio>
-          </div>
-        </div>
-        
-        <div id="trackInfo" class="mt-2 sm:mt-4 hidden px-2">
-          <h2 id="trackTitle" class="text-lg sm:text-xl font-bold mb-1 sm:mb-2"></h2>
-          <p id="trackDetails" class="yt-text-secondary text-sm sm:text-base"></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Track List -->
-    <div class="w-full lg:w-80 yt-sidebar border-t lg:border-t-0 lg:border-l border-gray-600" style="font-family: 'Special Elite', monospace;">
-      <div class="p-2 sm:p-4 border-b border-gray-600">
-        <div class="flex items-center justify-between mb-2">
-          <h2 class="text-base sm:text-lg font-bold">Music Tracks</h2>
-          <button class="yt-icon-button">
-            <i class="fas fa-shuffle yt-text-secondary"></i>
-          </button>
-        </div>
-        <p class="text-xs text-gray-400">Courage the Cowardly Dog OST</p>
-      </div>
-      <div id="trackList" class="track-list overflow-y-auto" style="max-height: calc(100vh - 120px);">
-        <div id="trackLoader" role="status" class="flex items-center justify-center h-56 max-w-sm rounded-lg shimmer mx-auto my-4">
-          <span class="sr-only">Loading...</span>
-        </div>
-      </div>
+  <main class="flex flex-col min-h-screen justify-center items-center p-4">
+    <div class="bg-card p-8 rounded-lg shadow-lg max-w-2xl w-full text-center">
+      <i class="fas fa-music text-4xl sm:text-6xl mb-6 text-red-500"></i>
+      <h1 class="text-xl sm:text-2xl font-bold mb-4">Content Removed</h1>
+      <p class="text-gray-300 mb-6">This content has been removed to avoid potential copyright issues. The distribution of copyrighted music tracks is not permitted without proper licensing.</p>
+      <p class="text-gray-400 text-sm mb-8">Please support the original creators by purchasing or streaming the soundtrack through official channels.</p>
+      <a href="index.html" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded">
+        Return to Home Page
+      </a>
     </div>
   </main>
 
   <script>
-    let allTracks = [];
-    let currentTrack = null;
-    let currentTrackIndex = 0;
-
-    async function loadTracks() {
-      const loader = document.getElementById('trackLoader');
-      try {
-        loader.style.display = 'flex';
-        const response = await fetch('CSV/OST.csv');
-        if (!response.ok) throw new Error('Failed to load track data');
-        const text = await response.text();
-        const lines = text.split('\n').slice(1);
-        
-        allTracks = parseCSV(lines);
-        displayTracks(allTracks);
-        loader.style.display = 'none';
-      } catch (error) {
-        console.error('Error loading tracks:', error);
-        loader.style.display = 'none';
-        document.getElementById('trackList').innerHTML = '<div class="p-4 text-red-400">Failed to load tracks</div>';
-      }
-    }
-
-    function parseCSV(lines) {
-      return lines.filter(line => line.trim()).map(line => {
-        const parts = line.split(',');
-        if (parts.length >= 4) {
-          let title = parts[0];
-          let path = parts[1];
-          let thumbnail = parts[2];
-          let tags = parts[3];
-          
-          if (title.startsWith('"')) {
-            title = title.substring(1);
-            let i = 1;
-            while (i < parts.length && !parts[i-1].endsWith('"')) {
-              title += ',' + parts[i];
-              i++;
-            }
-            if (title.endsWith('"')) title = title.slice(0, -1);
-            path = parts[i] || parts[1];
-            thumbnail = parts[i+1] || parts[2];
-            tags = parts[i+2] || parts[3];
-          }
-          
-          if (tags && tags.startsWith('"') && tags.endsWith('"')) {
-            tags = tags.slice(1, -1);
-          }
-          
-          return { 
-            title: title.trim(), 
-            path: path.trim(),
-            thumbnail: thumbnail.trim(),
-            tags: tags ? tags.trim().split(',').map(tag => tag.trim()) : []
-          };
-        }
-        return null;
-      }).filter(track => track);
-    }
-
-    function displayTracks(tracks) {
-      const list = document.getElementById('trackList');
-      if (!tracks.length) {
-        list.innerHTML = '<div class="p-4 text-gray-400">No tracks found</div>';
-        return;
-      }
-
-      list.innerHTML = tracks.map((track, index) => `
-        <div class="track-item p-3 cursor-pointer group" 
-             data-title="${track.title}" data-path="${track.path}" data-thumbnail="${track.thumbnail}" data-tags="${track.tags.join(', ')}" data-index="${index}">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded overflow-hidden flex-shrink-0">
-              <img src="${track.thumbnail}" alt="Music" class="w-full h-full object-cover">
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium yt-text-primary truncate">${track.title}</p>
-              <p class="text-xs yt-text-secondary truncate">${track.tags.slice(0, 2).join(' • ')}</p>
-            </div>
-            <div class="flex items-center space-x-2">
-              <button class="yt-icon-button opacity-0 group-hover:opacity-100">
-                <i class="fas fa-heart text-sm"></i>
-              </button>
-              <button class="play-btn yt-icon-button">
-                <i class="fas fa-play text-sm"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      `).join('');
-      
-      document.querySelectorAll('.track-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          const index = parseInt(this.dataset.index);
-          const title = this.dataset.title;
-          const path = this.dataset.path;
-          const tags = this.dataset.tags;
-          const thumbnail = this.dataset.thumbnail;
-          
-          currentTrackIndex = index;
-          playTrack(title, path, tags);
-        });
-        
-        const playBtn = item.querySelector('.play-btn');
-        if (playBtn) {
-          playBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const trackItem = this.closest('.track-item');
-            const index = parseInt(trackItem.dataset.index);
-            const title = trackItem.dataset.title;
-            const path = trackItem.dataset.path;
-            const tags = trackItem.dataset.tags;
-            const thumbnail = trackItem.dataset.thumbnail;
-            
-            currentTrackIndex = index;
-            playTrack(title, path, tags);
-          });
-        }
-      });
-    }
-
-    function playTrack(title, path, tags) {
-      const player = document.getElementById('audioPlayer');
-      const container = document.getElementById('audioPlayerContainer');
-      const placeholder = document.getElementById('placeholder');
-      const loader = document.getElementById('audioLoader');
-      const titleEl = document.getElementById('currentTrackTitle');
-      const tagsEl = document.getElementById('currentTrackTags');
-      
-      placeholder.classList.add('hidden');
-      container.classList.add('hidden');
-      loader.classList.remove('hidden');
-      
-      // Get the thumbnail from the track item
-      const trackItem = document.querySelector(`.track-item[data-index="${currentTrackIndex}"]`);
-      const thumbnail = trackItem ? trackItem.dataset.thumbnail : 'assets/music.jpg';
-      
-      // Update the thumbnail image
-      const thumbnailImg = document.getElementById('currentTrackThumbnail');
-      if (thumbnailImg) {
-        thumbnailImg.src = thumbnail;
-      }
-      
-      titleEl.textContent = title;
-      tagsEl.textContent = tags;
-      currentTrack = { title, path, tags, thumbnail };
-      
-      player.pause();
-      player.currentTime = 0;
-      
-      const fixedPath = path.startsWith('/') ? path.substring(1) : path;
-      player.src = fixedPath;
-      
-      const onCanPlay = function() {
-        loader.classList.add('hidden');
-        container.classList.remove('hidden');
-        updateActiveTrack();
-        
-        player.play().catch(e => {
-          console.error('Auto-play failed:', e);
-        });
-        
-        player.removeEventListener('canplay', onCanPlay);
-        player.removeEventListener('error', onError);
-      };
-      
-      const onError = function() {
-        console.error('Failed to load audio:', path);
-        loader.classList.add('hidden');
-        container.classList.remove('hidden');
-        alert('Failed to load audio file: ' + title);
-        
-        player.removeEventListener('canplay', onCanPlay);
-        player.removeEventListener('error', onError);
-      };
-      
-      player.addEventListener('canplay', onCanPlay);
-      player.addEventListener('error', onError);
-      player.load();
-    }
-
-    function updateActiveTrack() {
-      document.querySelectorAll('.track-item').forEach((item, index) => {
-        item.classList.toggle('active', index === currentTrackIndex);
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      loadTracks();
-      
-      const searchInput = document.getElementById('searchInput');
-      searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase();
-        const filtered = allTracks.filter(track => 
-          track.title.toLowerCase().includes(query) || 
-          track.tags.some(tag => tag.toLowerCase().includes(query))
-        );
-        displayTracks(filtered);
-      });
-      
-      const menuBtn = document.getElementById('menuBtn');
-      const menuDropdown = document.getElementById('menuDropdown');
-      
-      menuBtn?.addEventListener('click', function(e) {
-        e.stopPropagation();
-        menuDropdown.classList.toggle('hidden');
-      });
-      
-      document.addEventListener('click', function() {
-        menuDropdown.classList.add('hidden');
-      });
+    // Menu dropdown toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const menuDropdown = document.getElementById('menuDropdown');
+    
+    menuBtn?.addEventListener('click', function(e) {
+      e.stopPropagation();
+      menuDropdown.classList.toggle('hidden');
+    });
+    
+    document.addEventListener('click', function() {
+      menuDropdown.classList.add('hidden');
     });
   </script>
 </body>

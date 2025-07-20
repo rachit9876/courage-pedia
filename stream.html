@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <title>Courage Episodes Stream</title>
+  <title>Content Removed</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="googlebot" content="noindex, nofollow">
   <meta name="bingbot" content="noindex, nofollow">
@@ -14,11 +14,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <script src="video-protection.js"></script>
-  <script src="stream-protection.js"></script>
-  <script src="media-protection.js"></script>
-  <script src="network-protection.js"></script>
-  <script src="dev-detector.js"></script>
   <script src="pwa-install.js"></script>
   <style>
    body{overflow-x:hidden}
@@ -203,48 +198,15 @@
     </ol>
   </nav>
 
-  <main class="flex flex-col lg:flex-row min-h-screen">
-    <!-- Video Player -->
-    <div class="flex-1 bg-black flex items-center justify-center p-2 sm:p-4">
-      <div class="w-full max-w-3xl">
-        <div id="videoContainer" class="aspect-video bg-card-opacity rounded-lg flex items-center justify-center">
-          <div id="placeholder" class="text-center text-gray-400 px-4 cursor-pointer hover:text-gray-300 transition-colors">
-            <i class="fas fa-play-circle text-4xl sm:text-6xl mb-2 sm:mb-4"></i>
-            <h1 class="text-sm sm:text-lg font-bold mb-2">Watch Courage Episodes Free</h1>
-
-          </div>
-          <div id="videoLoader" role="status" class="w-full h-full rounded-lg shimmer hidden">
-            <span class="sr-only">Loading video...</span>
-          </div>
-          <video id="videoPlayer" class="w-full h-full rounded-lg hidden" controls controlsList="nodownload" disablePictureInPicture>
-            Your browser does not support the video tag.
-          </video>
-          <iframe id="drivePlayer" class="w-full h-full rounded-lg hidden" allowfullscreen></iframe>
-        </div>
-        <div id="episodeInfo" class="mt-2 sm:mt-4 hidden px-2">
-          <h2 id="episodeTitle" class="text-lg sm:text-xl font-bold mb-1 sm:mb-2"></h2>
-          <p id="episodeDetails" class="text-gray-400 text-sm sm:text-base"></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Episode List -->
-    <div class="w-full lg:w-80 bg-card-opacity border-t lg:border-t-0 lg:border-l border-gray-600">
-      <div class="p-2 sm:p-4 border-b border-gray-600">
-        <div class="flex items-center justify-between mb-2">
-          <h2 id="episodeListTitle" class="text-base sm:text-lg font-bold">All Episodes</h2>
-          <select id="languageSelector" class="bg-card border border-gray-600 rounded px-2 py-1 text-xs sm:text-sm focus:outline-none">
-            <option value="hindi">Language: Hindi</option>
-            <option value="english">Language: English</option>
-          </select>
-        </div>
-        <p id="episodeListSubtitle" class="text-xs text-gray-400">All Episodes</p>
-      </div>
-      <div id="episodeList" class="episode-list overflow-y-auto" style="max-height: calc(100vh - 120px);">
-        <div id="episodeLoader" role="status" class="flex items-center justify-center h-56 max-w-sm rounded-lg shimmer mx-auto my-4">
-          <span class="sr-only">Loading...</span>
-        </div>
-      </div>
+  <main class="flex flex-col min-h-screen justify-center items-center p-4">
+    <div class="bg-card p-8 rounded-lg shadow-lg max-w-2xl w-full text-center">
+      <i class="fas fa-copyright text-4xl sm:text-6xl mb-6 text-red-500"></i>
+      <h1 class="text-xl sm:text-2xl font-bold mb-4">Content Removed</h1>
+      <p class="text-gray-300 mb-6">This content has been removed to avoid potential copyright issues. The streaming of copyrighted TV episodes is not permitted without proper licensing.</p>
+      <p class="text-gray-400 text-sm mb-8">Please support the original creators by watching Courage the Cowardly Dog through official channels.</p>
+      <a href="index.html" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded">
+        Return to Home Page
+      </a>
     </div>
   </main>
   
@@ -261,265 +223,6 @@
   </div>
 
   <script>
-    let allEpisodes = [];
-    let currentEpisode = null;
-    let currentLanguage = 'hindi';
-
-    async function loadEpisodes() {
-      const loader = document.getElementById('episodeLoader');
-      try {
-        loader.style.display = 'flex';
-        const csvFile = currentLanguage === 'hindi' ? 'CSV/CTCD_hindi.csv' : 'CSV/CTCD_english.csv';
-        const response = await fetch(csvFile);
-        if (!response.ok) throw new Error('Failed to load episode data');
-        const text = await response.text();
-        const lines = text.split('\n').slice(1);
-        
-        if (currentLanguage === 'hindi') {
-          allEpisodes = parseHindiCSV(lines);
-        } else {
-          allEpisodes = parseEnglishCSV(lines);
-        }
-        
-        displayEpisodes(allEpisodes);
-        loader.style.display = 'none';
-      } catch (error) {
-        console.error('Error loading episodes:', error);
-        loader.style.display = 'none';
-        document.getElementById('episodeList').innerHTML = '<div class="p-4 text-red-400">Failed to load episodes</div>';
-      }
-    }
-
-    function parseHindiCSV(lines) {
-      return lines.filter(line => line.trim()).map(line => {
-        const parts = line.split(',');
-        if (parts.length >= 4) {
-          const season = parseInt(parts[0]);
-          const episode = parseInt(parts[1]);
-          let title = parts[2];
-          let url = parts[3];
-          
-          // Handle quoted titles
-          if (title.startsWith('"')) {
-            title = title.substring(1);
-            let i = 3;
-            while (i < parts.length && !parts[i-1].endsWith('"')) {
-              title += ',' + parts[i];
-              i++;
-            }
-            if (title.endsWith('"')) title = title.slice(0, -1);
-            url = parts[i] || parts[parts.length - 1];
-          }
-          
-          return { season, episode, title: title.trim(), url: url.trim() };
-        }
-        return null;
-      }).filter(ep => ep);
-    }
-
-    function parseEnglishCSV(lines) {
-      return lines.filter(line => line.trim()).map(line => {
-        const parts = line.split(',');
-        if (parts.length >= 4) {
-          const season = parseInt(parts[0]);
-          const episode = parts[1]; // Keep as string for "1 (Part A)" format
-          let title = parts[2];
-          let url = parts[3];
-          
-          // Handle quoted titles
-          if (title.startsWith('"')) {
-            title = title.substring(1);
-            let i = 3;
-            while (i < parts.length && !parts[i-1].endsWith('"')) {
-              title += ',' + parts[i];
-              i++;
-            }
-            if (title.endsWith('"')) title = title.slice(0, -1);
-            url = parts[i] || parts[parts.length - 1];
-          }
-          
-          return { season, episode, title: title.trim(), url: url.trim() };
-        }
-        return null;
-      }).filter(ep => ep);
-    }
-
-    function switchLanguage(language) {
-      currentLanguage = language;
-      const titleElement = document.getElementById('episodeListTitle');
-      const subtitleElement = document.getElementById('episodeListSubtitle');
-      
-      if (language === 'hindi') {
-        titleElement.textContent = 'All Episodes';
-        subtitleElement.textContent = 'All Episodes';
-      } else {
-        titleElement.textContent = 'All English Episodes';
-        subtitleElement.textContent = 'All English Episodes';
-      }
-      
-      // Update placeholder text based on language
-      const placeholderTitle = document.querySelector('#placeholder h1');
-      if (placeholderTitle) {
-        placeholderTitle.textContent = 'Watch Courage Episodes Free';
-      }
-      
-      // Clear current episodes and reload
-      allEpisodes = [];
-      currentEpisode = null;
-      document.getElementById('episodeList').innerHTML = `
-        <div id="episodeLoader" role="status" class="flex items-center justify-center h-56 max-w-sm rounded-lg shimmer mx-auto my-4">
-          <span class="sr-only">Loading...</span>
-        </div>
-      `;
-      
-      // Reset video player
-      const videoPlayer = document.getElementById('videoPlayer');
-      const drivePlayer = document.getElementById('drivePlayer');
-      const placeholder = document.getElementById('placeholder');
-      const videoLoader = document.getElementById('videoLoader');
-      const episodeInfo = document.getElementById('episodeInfo');
-      
-      videoPlayer.classList.add('hidden');
-      drivePlayer.classList.add('hidden');
-      videoLoader.classList.add('hidden');
-      placeholder.classList.remove('hidden');
-      episodeInfo.classList.add('hidden');
-      
-      loadEpisodes();
-    }
-
-    function displayEpisodes(episodes) {
-      const list = document.getElementById('episodeList');
-      if (!episodes.length) {
-        list.innerHTML = '<div class="p-4 text-gray-400">No episodes found</div>';
-        return;
-      }
-
-      list.innerHTML = episodes.map((ep, index) => `
-        <div class="episode-item p-2 sm:p-3 cursor-pointer border-b border-gray-700 hover:bg-gray-700" 
-             data-season="${ep.season}" data-episode="${ep.episode}" data-title="${ep.title}" data-url="${ep.url}">
-          <div class="flex items-center justify-between">
-            <div class="flex-1 min-w-0">
-              <p class="text-xs sm:text-sm font-semibold text-white truncate">S${ep.season}E${ep.episode}</p>
-              <p class="text-xs text-gray-400 truncate leading-tight">${ep.title}</p>
-            </div>
-            <i class="fas fa-play text-gray-500 ml-1 sm:ml-2 text-xs sm:text-sm"></i>
-          </div>
-        </div>
-      `).join('');
-      
-      // Add click listeners
-      document.querySelectorAll('.episode-item').forEach(item => {
-        item.addEventListener('click', function() {
-          playEpisode(this.dataset.season, this.dataset.episode, this.dataset.title, this.dataset.url);
-        });
-      });
-    }
-
-    function playEpisode(season, episode, title, url) {
-      const videoPlayer = document.getElementById('videoPlayer');
-      const drivePlayer = document.getElementById('drivePlayer');
-      const placeholder = document.getElementById('placeholder');
-      const videoLoader = document.getElementById('videoLoader');
-      const episodeInfo = document.getElementById('episodeInfo');
-      const episodeTitle = document.getElementById('episodeTitle');
-      const episodeDetails = document.getElementById('episodeDetails');
-
-      // Update active episode
-      document.querySelectorAll('.episode-item').forEach(item => item.classList.remove('active'));
-      document.querySelector(`[data-season="${season}"][data-episode="${episode}"]`).classList.add('active');
-
-      // Show loader
-      placeholder.classList.add('hidden');
-      videoPlayer.classList.add('hidden');
-      drivePlayer.classList.add('hidden');
-      videoLoader.classList.remove('hidden');
-      episodeInfo.classList.remove('hidden');
-
-      // Process URL based on source
-      let videoUrl = url;
-      let useIframe = false;
-      
-      if (url.includes('drive.google.com/file/d/')) {
-        // Extract the file ID from Google Drive URL
-        const fileId = url.match(/\/d\/([^\/]+)/)?.[1];
-        if (fileId) {
-          // Use the Google Drive embed player for better compatibility
-          videoUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-          useIframe = true;
-        }
-      }
-
-      if (useIframe) {
-        // Use iframe for Google Drive
-        drivePlayer.src = videoUrl;
-        
-        // Hide loader when iframe loads
-        drivePlayer.onload = function() {
-          videoLoader.classList.add('hidden');
-          drivePlayer.classList.remove('hidden');
-        };
-        
-        // Handle iframe errors
-        drivePlayer.onerror = function() {
-          handleVideoError();
-        };
-      } else {
-        // Use regular video player
-        videoPlayer.src = videoUrl;
-        videoPlayer.load();
-        
-        // Hide loader when video can play and start playing
-        videoPlayer.addEventListener('canplay', function() {
-          videoLoader.classList.add('hidden');
-          videoPlayer.classList.remove('hidden');
-          videoPlayer.play();
-        }, { once: true });
-        
-        // Handle video errors
-        videoPlayer.addEventListener('error', function() {
-          handleVideoError();
-        }, { once: true });
-      }
-      
-      function handleVideoError() {
-        videoLoader.classList.add('hidden');
-        placeholder.classList.remove('hidden');
-        placeholder.innerHTML = `
-          <i class="fas fa-exclamation-circle text-4xl sm:text-6xl mb-2 sm:mb-4 text-red-500"></i>
-          <h1 class="text-sm sm:text-lg font-bold mb-2">Video playback error</h1>
-          <p class="text-xs sm:text-base">Unable to load the video. Please try again later.</p>
-        `;
-        console.error('Video error occurred');
-      }
-
-      // Update episode info
-      episodeTitle.textContent = title;
-      episodeDetails.textContent = `Season ${season}, Episode ${episode}`;
-
-      currentEpisode = { season, episode, title, url: videoUrl };
-    }
-
-    function filterEpisodes() {
-      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-      const seasonFilter = document.getElementById('seasonFilter').value;
-
-      let filtered = allEpisodes;
-
-      if (seasonFilter) {
-        filtered = filtered.filter(ep => ep.season.toString() === seasonFilter);
-      }
-
-      if (searchQuery) {
-        filtered = filtered.filter(ep => 
-          ep.title.toLowerCase().includes(searchQuery) ||
-          `s${ep.season}e${ep.episode}`.toLowerCase().includes(searchQuery)
-        );
-      }
-
-      displayEpisodes(filtered);
-    }
-
     // Menu dropdown toggle
     const menuBtn = document.getElementById('menuBtn');
     const menuDropdown = document.getElementById('menuDropdown');
@@ -532,85 +235,6 @@
       if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
         menuDropdown.classList.add('hidden');
       }
-    });
-
-    // Event listeners
-    document.getElementById('searchInput').addEventListener('input', filterEpisodes);
-    document.getElementById('seasonFilter').addEventListener('change', filterEpisodes);
-    document.getElementById('languageSelector').addEventListener('change', function(e) {
-      switchLanguage(e.target.value);
-    });
-
-    // Play first episode when placeholder is clicked
-    document.getElementById('placeholder').addEventListener('click', function() {
-      if (allEpisodes.length > 0) {
-        const firstEp = allEpisodes[0];
-        playEpisode(firstEp.season, firstEp.episode, firstEp.title, firstEp.url);
-      }
-    });
-
-    // Load episodes on page load
-    window.addEventListener('load', loadEpisodes);
-    
-    // Cache management function
-    async function clearCache() {
-      try {
-        // Clear service worker cache
-        if ('caches' in window) {
-          await caches.delete('courage-videos-v1');
-        }
-        
-        // Clear localStorage
-        localStorage.clear();
-        
-        // Clear sessionStorage
-        sessionStorage.clear();
-        
-        // Clear cookies
-        document.cookie.split(';').forEach(function(c) {
-          document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
-        });
-        
-        // Reload the page to refresh content
-        window.location.reload(true);
-      } catch (error) {
-        console.error('Error clearing cache:', error);
-        alert('Failed to clear cache. Please try again.');
-      }
-    }
-    
-    // Popup management
-    const cachePopup = document.getElementById('cachePopup');
-    const popupYesBtn = document.getElementById('popupYesBtn');
-    const popupNoBtn = document.getElementById('popupNoBtn');
-    
-    function showCachePopup() {
-      // Show popup
-      cachePopup.classList.add('active');
-    }
-    
-    function hideCachePopup() {
-      cachePopup.classList.remove('active');
-    }
-    
-    // Event listeners for popup
-    popupYesBtn.addEventListener('click', function() {
-      clearCache();
-      hideCachePopup();
-    });
-    
-    popupNoBtn.addEventListener('click', hideCachePopup);
-    
-    // Close popup when clicking outside
-    cachePopup.addEventListener('click', function(e) {
-      if (e.target === cachePopup) {
-        hideCachePopup();
-      }
-    });
-    
-    // Clear cache button functionality
-    document.getElementById('clearCacheBtn').addEventListener('click', function() {
-      showCachePopup();
     });
   </script>
   
