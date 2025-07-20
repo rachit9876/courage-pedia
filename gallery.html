@@ -195,7 +195,13 @@
           // Create details paragraph
           const details = document.createElement('p');
           details.className = 'font-semibold leading-snug mt-2 text-black';
-          details.textContent = character.Details;
+          // Replace semicolons with line breaks
+          let detailsText = character.Details.replace(/;/g, '<br>');
+          // Convert text[path] patterns to links
+          detailsText = detailsText.replace(/([\w\s]+)\[([^\]]+)\]/g, function(match, linkText, path) {
+            return `<a href="${path}" class="text-blue-600 underline">${linkText}</a>`;
+          });
+          details.innerHTML = detailsText;
           
           // Append all elements
           content.appendChild(name);

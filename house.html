@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courage the Cowardly Dog - Interactive Farmhouse Map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body{font-family:'Special Elite',monospace;background:#000;color:#fdc3ed;overflow-x:hidden}
+        h1,h2,h3,.nav-item,.card-title{font-family:'Special Elite',monospace}
+        .bg-main{background:#000}.bg-card{background:#333}.text-primary{color:#fdc3ed}.text-secondary{color:#ccc}
+        .accent-bg,.horror-accent-bg,.love-accent-bg{background:#333}
+        .accent-text,.horror-accent-text,.love-accent-text{color:#fdc3ed}
+        .nav-item.active{border-bottom:2px solid #fdc3ed;color:#fdc3ed}
+        
+        @keyframes characterBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        .character-bounce { animation: characterBounce 2s infinite ease-in-out; }
+        
+        @keyframes selectedRoom {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .room-selected { animation: selectedRoom 0.5s ease; }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .slide-up { animation: slideUp 0.3s forwards; }
+        
+        @media(max-width:768px){
+            .text-3xl{font-size:1.5rem}
+            .text-4xl{font-size:1.875rem}
+            .container{padding-left:1rem;padding-right:1rem}
+            .py-20{padding-top:3rem;padding-bottom:3rem}
+            .pt-16{padding-top:4rem}
+            .gap-8{gap:1rem}
+            .p-6{padding:1rem}
+            .px-4{padding-left:0.75rem;padding-right:0.75rem}
+        }
+    </style>
+</head>
+<body class="bg-main text-primary">
+    <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/30 border-b border-white/10 flex items-center justify-between px-4 py-2">
+        <img src="logo.svg" alt="CN Logo" class="h-8 sm:h-10 w-auto flex-shrink-0" />
+        
+        <div class="flex-1 max-w-xs sm:max-w-sm md:max-w-md mx-2 sm:mx-4">
+            <input id="headerSearch" type="text" placeholder="Search..." class="w-full px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full bg-card placeholder-gray-400 border border-gray-600 focus:outline-none focus:border-gray-400 text-xs sm:text-sm" style="color:#fdc3ed;">
+        </div>
+        
+        <div class="flex items-center flex-shrink-0 gap-2" style="color:#fdc3ed;">
+            <a href="#" style="background-color:#fdc3ed;" class="hover:opacity-80 px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-xs sm:text-sm font-semibold text-black">@rachit.zip</a>
+            <div class="relative">
+                <button id="menuBtn" class="focus:outline-none hover:text-gray-300 p-1">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div id="menuDropdown" class="absolute right-0 mt-2 w-44 sm:w-48 bg-card border border-gray-600 rounded-lg shadow-lg hidden z-50">
+                    <div class="py-1">
+                        <a href="index.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Home</a>
+                        <a href="cookbook/book.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Recipe Book</a>
+                        <a href="gallery.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Gallery</a>
+                        <a href="research.html" class="nav-item block px-3 py-2 text-xs sm:text-sm text-pink-200 hover:bg-gray-700">Research</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-16 p-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
+            <h2 class="text-4xl font-bold text-center accent-text">Explore the Farmhouse</h2>
+            <p class="mt-4 max-w-3xl mx-auto text-center text-secondary">Click on any room to learn more about the iconic Bagge farmhouse from Courage the Cowardly Dog.</p>
+        </div>
+        
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
+                <!-- House Map -->
+                <div class="xl:col-span-2 space-y-6">
+                    <!-- Attic Level -->
+                    <div class="bg-card rounded-xl p-5 border-2 border-house-wood shadow-md">
+                        <h4 class="text-xl font-bold accent-text text-center mb-4">Attic</h4>
+                        <div class="grid grid-cols-1">
+                            <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-pink-100 to-pink-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
+                                 data-room="computer-room">
+                                <div class="character-bounce absolute top-2 left-2 w-6 h-6 bg-courage-pink rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md">C</div>
+                                <span class="relative z-20 text-gray-800 font-semibold">Computer Room</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Second Floor Level -->
+                    <div class="bg-card rounded-xl p-5 border-2 border-house-wood shadow-md">
+                        <h4 class="text-xl font-bold accent-text text-center mb-4">Second Floor</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
+                                 data-room="master-bedroom">
+                                <div class="character-bounce absolute top-2 left-2 w-6 h-6 bg-courage-green rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md">M</div>
+                                <div class="character-bounce absolute top-2 right-2 w-6 h-6 bg-courage-brown rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md">E</div>
+                                <span class="relative z-20 text-gray-800 font-semibold">Master Bedroom</span>
+                            </div>
+                            <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
+                                 data-room="bathroom">
+                                <span class="relative z-20 text-gray-800 font-semibold">Bathroom</span>
+                            </div>
+                            <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
+                                 data-room="staircase">
+                                <span class="relative z-20 text-gray-800 font-semibold">Staircase</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ground Floor Level -->
+                    <div class="bg-card rounded-xl p-5 border-2 border-house-wood shadow-md">
+                        <h4 class="text-xl font-bold accent-text text-center mb-4">Ground Floor</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
+                                 data-room="living-room">
+                                <div class="character-bounce absolute top-2 left-2 w-6 h-6 bg-courage-pink rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md">C</div>
+                                <div class="character-bounce absolute bottom-2 left-2 w-6 h-6 bg-courage-brown rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md">E</div>
+                                <span class="relative z-20 text-gray-800 font-semibold">Living Room</span>
+                            </div>
+                            <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
+                                 data-room="dining-room">
+                                <span class="relative z-20 text-gray-800 font-semibold">Dining Room</span>
+                            </div>
+                            <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
+                                 data-room="kitchen">
+                                <div class="character-bounce absolute top-2 right-2 w-6 h-6 bg-courage-green rounded-full flex items-center justify-center text-white font-bold text-sm z-10 shadow-md">M</div>
+                                <span class="relative z-20 text-gray-800 font-semibold">Kitchen</span>
+                            </div>
+                            <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
+                                 data-room="front-porch">
+                                <span class="relative z-20 text-gray-800 font-semibold">Front Porch</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Basement Level -->
+                    <div class="bg-card rounded-xl p-5 border-2 border-house-wood shadow-md">
+                            <h4 class="text-xl font-bold accent-text text-center mb-4">Basement</h4>
+                            <div class="grid grid-cols-1">
+                                <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
+                                     data-room="cellar">
+                                    <span class="relative z-20 text-gray-800 font-semibold">Cellar</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Exterior -->
+                        <div class="bg-card rounded-xl p-5 border-2 border-house-wood shadow-md">
+                            <h4 class="text-xl font-bold accent-text text-center mb-4">Exterior</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-orange-200 to-orange-300 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
+                                     data-room="windmill">
+                                    <span class="relative z-20 text-gray-800 font-semibold">Windmill</span>
+                                </div>
+                                <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
+                                     data-room="chicken-coop">
+                                    <span class="relative z-20 text-gray-800 font-semibold">Chicken Coop</span>
+                                </div>
+                                <div class="room-button relative p-5 min-h-20 bg-gradient-to-br from-blue-200 to-blue-300 rounded-lg cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent hover:border-courage-pink flex items-center justify-center text-center font-medium" 
+                                     data-room="water-pump">
+                                    <span class="relative z-20 text-gray-800 font-semibold">Water Pump</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Room Info Panel (Desktop) -->
+                    <div class="bg-card p-6 rounded-xl border-2 border-courage-pink shadow-md min-h-48 sticky top-6 hidden xl:block">
+                        <div id="room-info">
+                            <h4 class="text-xl font-bold accent-text mb-3">Click a room to explore!</h4>
+                            <p class="text-secondary mb-2">Hover over or click any room in the farmhouse to learn more about it.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Room Info Panel -->
+    <div id="mobile-info-panel" class="fixed bottom-0 left-0 right-0 bg-card border-t-2 border-courage-pink p-4 z-50 transform translate-y-full">
+        <div class="flex justify-between items-center mb-2">
+            <h5 class="text-base text-primary font-medium">Room Information</h5>
+            <button id="close-mobile-info" class="text-gray-400 hover:text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-room-info">
+            <span class="inline-block horror-accent-bg horror-accent-text px-3 py-1 rounded-full text-xs font-medium mb-3">Attic</span>
+            <h4 class="text-xl font-bold accent-text mb-3">Computer Room</h4>
+            <p class="text-secondary mb-3">Wooden attic room with computer desk, single window, where Courage accesses computer</p>
+            <p class="text-secondary text-sm font-medium italic">Computer desk, CRT monitor, single skylight window, wooden walls</p>
+        </div>
+    </div>
+
+    <script>
+        // House layout data
+        const houseData = {
+            "computer-room": {
+                "name": "Computer Room",
+                "floor": "Attic",
+                "description": "Wooden attic room with computer desk, single window, where Courage accesses computer",
+                "features": "Computer desk, CRT monitor, single skylight window, wooden walls"
+            },
+            "master-bedroom": {
+                "name": "Master Bedroom",
+                "floor": "Second Floor",
+                "description": "Main bedroom for Muriel and Eustace on second floor",
+                "features": "Double bed, wooden floors, dormer windows"
+            },
+            "bathroom": {
+                "name": "Bathroom", 
+                "floor": "Second Floor",
+                "description": "Family bathroom on second floor with basic fixtures",
+                "features": "Basic toilet, sink, bathtub, wooden floors"
+            },
+            "staircase": {
+                "name": "Staircase",
+                "floor": "Second Floor", 
+                "description": "Wooden staircase connecting ground floor to second floor",
+                "features": "Dark wooden banister, connects all floors"
+            },
+            "living-room": {
+                "name": "Living Room",
+                "floor": "Ground Floor",
+                "description": "Main living space with floral wallpaper, armchairs, grandfather clock, green oval rug",
+                "features": "Floral wallpaper, grandfather clock, reading chair, front-facing windows"
+            },
+            "dining-room": {
+                "name": "Dining Room",
+                "floor": "Ground Floor",
+                "description": "Connected to kitchen, wooden dining table with chairs, part of open plan",
+                "features": "Wooden table, connects to kitchen and living room"
+            },
+            "kitchen": {
+                "name": "Kitchen",
+                "floor": "Ground Floor",
+                "description": "Country-style kitchen with green curtains, wooden cabinets, connected to dining",
+                "features": "Green window curtains, hanging utensils, country cookware, wood stove"
+            },
+            "front-porch": {
+                "name": "Front Porch",
+                "floor": "Ground Floor",
+                "description": "Wooden porch with posts at front entrance of house",
+                "features": "Two wooden support posts, weathered wooden planking"
+            },
+            "cellar": {
+                "name": "Cellar",
+                "floor": "Basement",
+                "description": "Underground cellar with dirt floor, storage space, basement utilities",
+                "features": "Dirt floor, stone walls, storage for tools and supplies"
+            },
+            "windmill": {
+                "name": "Windmill",
+                "floor": "Exterior",
+                "description": "Large wooden windmill structure adjacent to house",
+                "features": "Tall structure, wooden blades, iconic landmark of the property"
+            },
+            "chicken-coop": {
+                "name": "Chicken Coop",
+                "floor": "Exterior",
+                "description": "Small wooden structure housing chickens in the yard",
+                "features": "Wooden frame, wire mesh, nesting boxes for chickens"
+            },
+            "water-pump": {
+                "name": "Water Pump",
+                "floor": "Exterior",
+                "description": "Manual water pump in the front yard for drawing well water",
+                "features": "Cast iron pump handle, wooden platform, well access"
+            }
+        };
+
+        // Initialize the interactive map
+        document.addEventListener('DOMContentLoaded', function() {
+            const roomButtons = document.querySelectorAll('.room-button');
+            const roomInfoPanel = document.getElementById('room-info');
+            const mobileRoomInfoPanel = document.getElementById('mobile-room-info');
+            const mobileInfoPanel = document.getElementById('mobile-info-panel');
+            const closeMobileInfo = document.getElementById('close-mobile-info');
+
+            roomButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const roomId = this.getAttribute('data-room');
+                    const roomData = houseData[roomId];
+                    
+                    if (roomData) {
+                        // Remove previous selection
+                        roomButtons.forEach(btn => btn.classList.remove('room-selected', 'border-pink-500', 'shadow-pink-400/40'));
+                        
+                        // Add selection styles
+                        this.classList.add('room-selected', 'border-pink-500', 'shadow-lg', 'shadow-pink-400/40');
+                        
+                        // Update info panels (both desktop and mobile)
+                        const infoHTML = `
+                            <span class="inline-block horror-accent-bg horror-accent-text px-3 py-1 rounded-full text-xs font-medium mb-3">${roomData.floor}</span>
+                            <h4 class="text-xl font-bold accent-text mb-3">${roomData.name}</h4>
+                            <p class="text-secondary mb-3">${roomData.description}</p>
+                            <p class="text-secondary text-sm font-medium italic">${roomData.features}</p>
+                        `;
+                        
+                        if (roomInfoPanel) roomInfoPanel.innerHTML = infoHTML;
+                        if (mobileRoomInfoPanel) mobileRoomInfoPanel.innerHTML = infoHTML;
+                        
+                        // Show mobile info panel on smaller screens
+                        if (window.innerWidth < 1280) {
+                            mobileInfoPanel.classList.remove('translate-y-full');
+                            mobileInfoPanel.classList.add('slide-up');
+                        }
+                    }
+                });
+
+                // Add hover effect for info panel (desktop only)
+                button.addEventListener('mouseenter', function() {
+                    const roomId = this.getAttribute('data-room');
+                    const roomData = houseData[roomId];
+                    
+                    if (roomData && !this.classList.contains('room-selected') && roomInfoPanel) {
+                        roomInfoPanel.innerHTML = `
+                            <span class="inline-block horror-accent-bg horror-accent-text px-3 py-1 rounded-full text-xs font-medium mb-3">${roomData.floor}</span>
+                            <h4 class="text-xl font-bold accent-text mb-3">${roomData.name}</h4>
+                            <p class="text-secondary mb-3">${roomData.description}</p>
+                            <p class="text-secondary text-sm font-medium italic">${roomData.features}</p>
+                        `;
+                    }
+                });
+            });
+            
+            // Close mobile info panel
+            closeMobileInfo.addEventListener('click', function() {
+                mobileInfoPanel.classList.add('translate-y-full');
+                mobileInfoPanel.classList.remove('slide-up');
+            });
+        });
+    </script>
+
+    <footer class="bg-card shadow-inner py-2 mt-8">
+        <div class="container mx-auto px-4 text-center text-secondary">
+            <p class="text-xs">Courage the Cowardly Dog Fan Site | @rachit.zip | <a href="disclaimer.html" class="underline hover:text-pink-300">Copyright Disclaimer</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Menu dropdown toggle functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('menuBtn');
+            const menuDropdown = document.getElementById('menuDropdown');
+            
+            menuBtn?.addEventListener('click', () => {
+                menuDropdown.classList.toggle('hidden');
+            });
+            
+            // Close menu when clicking nav links or outside
+            document.addEventListener('click', (e) => {
+                if (menuBtn && !menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+                    menuDropdown.classList.add('hidden');
+                }
+            });
+            
+            menuDropdown?.addEventListener('click', (e) => {
+                if (e.target.classList.contains('nav-item')) {
+                    menuDropdown.classList.add('hidden');
+                }
+            });
+            
+            // Header search functionality
+            const headerSearch = document.getElementById('headerSearch');
+            let searchTimeout;
+            
+            headerSearch?.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    const query = e.target.value.toLowerCase();
+                    if (!query.trim()) return;
+                    
+                    // Implement search functionality here if needed
+                }, 300);
+            });
+        });
+    </script>
+    
+</body>
+</html>
