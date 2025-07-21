@@ -1,4 +1,4 @@
-# Courage the Cowardly Dog Fan Page - Developer Guide
+# Courage Fan Page - Developer Guide
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
@@ -16,7 +16,7 @@
 
 ## Project Overview
 
-This project is a comprehensive fan page dedicated to the animated series "Courage the Cowardly Dog." It features multiple interactive sections including:
+This project is a comprehensive fan page dedicated to the animated series "Courage." It features multiple interactive sections including:
 
 - Main landing page with character information
 - Episode guide and details

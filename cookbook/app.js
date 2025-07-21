@@ -1,8 +1,8 @@
 // Recipe data
 const recipeData = {
   "title": "Muriel's Farmhouse Cookbook: Recipes from Nowhere, Kansas",
-  "subtitle": "A Complete Collection of Courage the Cowardly Dog Recipes",
-  "description": "Step into Muriel's kitchen and discover the magical recipes that have appeared throughout the adventures of Courage the Cowardly Dog. From the famous Happy Plums to Little Muriel's extravagant macaroni and cheese, this cookbook brings you all the culinary delights from the middle of Nowhere!",
+  "subtitle": "A Complete Collection of Courage Recipes",
+  "description": "Step into Muriel's kitchen and discover the magical recipes that have appeared throughout the adventures of Courage. From the famous Happy Plums to Little Muriel's extravagant macaroni and cheese, this cookbook brings you all the culinary delights from the middle of Nowhere!",
   "recipes": [
     {
       "name": "Happy Plums",
