@@ -43,7 +43,7 @@
     <img src="logo.svg" alt="CN Logo" class="h-8 sm:h-10 w-auto flex-shrink-0" />
     
     <div class="flex items-center gap-2">
-      <button id="aspect-4-3" class="px-2 py-0.5 bg-pink-200 text-black rounded-md text-xs font-bold active">4:3</button>
+      <button id="aspect-4-3" class="px-2 py-0.5 rounded-md text-xs font-bold active" style="background-color: #411b51; color: #cc9cfa;">4:3</button>
       <button id="aspect-16-9" class="px-2 py-0.5 bg-gray-700 text-pink-200 rounded-md text-xs font-bold">16:9</button>
       <button id="aspect-1-1" class="px-2 py-0.5 bg-gray-700 text-pink-200 rounded-md text-xs font-bold">1:1</button>
     </div>
@@ -69,10 +69,10 @@
 
   <main class="pt-16 p-8">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
-      
-      <p class="mt-4 max-w-3xl mx-auto text-center text-secondary">Explore the complete collection of characters from Courage the Cowardly Dog.</p>
+
+      <p class="mt-4 max-w-3xl mx-auto text-center text-secondary">⚠️ No Copyright as all images are AI generated -OR- made by @rachit.zip</p>
     </div>
-    <div id="card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+    <div id="card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
       <!-- Cards will be dynamically generated here -->
     </div>
   </main>
@@ -158,7 +158,8 @@
         // Generate a card for each character
         characters.forEach((character, index) => {
           const card = document.createElement('div');
-          card.className = `flex flex-col border border-black bg-pink-200 h-full`;
+          card.className = `flex flex-col border border-black h-full`;
+          card.style.backgroundColor = '#411b51';
           
           // Create image container with 4:3 aspect ratio
           const imgContainer = document.createElement('div');
@@ -186,17 +187,19 @@
           
           // Create name heading
           const name = document.createElement('h2');
-          name.className = 'font-extrabold text-xl text-black';
+          name.className = 'font-extrabold text-xl';
+          name.style.color = '#cccccc';
           name.textContent = character.Name;
           
           // Create details paragraph
           const details = document.createElement('p');
-          details.className = 'font-semibold leading-snug mt-2 text-black';
+          details.className = 'font-semibold leading-snug mt-2';
+          details.style.color = '#cc9cfa';
           // Replace semicolons with line breaks
           let detailsText = character.Details.replace(/;/g, '<br>');
           // Convert text[path] patterns to links
           detailsText = detailsText.replace(/([\w\s]+)\[([^\]]+)\]/g, function(match, linkText, path) {
-            return `<a href="${path}" class="text-blue-600 underline">${linkText}</a>`;
+            return `<a href="${path}" class="text-[#cccccc] underline">${linkText}</a>`;
           });
           details.innerHTML = detailsText;
           
@@ -242,15 +245,18 @@
         
         // Update button styles
         [aspect43Btn, aspect169Btn, aspect11Btn].forEach(btn => {
-          btn.classList.remove('bg-pink-200', 'text-black');
+          btn.classList.remove('bg-gray-700', 'text-pink-200');
           btn.classList.add('bg-gray-700', 'text-pink-200');
+          btn.style.backgroundColor = '';
+          btn.style.color = '';
         });
         
         // Set active button
         const activeBtn = document.getElementById(`aspect-${ratio.replace('/', '-')}`);
         if (activeBtn) {
           activeBtn.classList.remove('bg-gray-700', 'text-pink-200');
-          activeBtn.classList.add('bg-pink-200', 'text-black');
+          activeBtn.style.backgroundColor = '#411b51';
+          activeBtn.style.color = '#cc9cfa';
         }
         
         // Update all image containers
@@ -296,6 +302,6 @@
       });
     });
   </script>
-  <script src="notifications/acknowledge.js"></script>
+  
 </body>
 </html>
