@@ -12,6 +12,8 @@ let direction = new THREE.Vector3();
 let prevTime = performance.now();
 const speed = 5.0; // Increased movement speed for flying
 let horizon; // Horizon plane for fake horizon effect
+let isDayMode = true; // Default to day mode
+let ambientLight, sunLight, fillLight; // Store lights for day/night toggle
 
 // Object_9 boundary limits - adjusted to allow more movement in x-z plane
 const object9Bounds = {
@@ -80,11 +82,11 @@ function init() {
     textureManager.setRenderer(renderer);
     
     // Add lighting (optimized for daytime)
-    const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.6); // Brighter ambient light for daytime
+    ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.6); // Brighter ambient light for daytime
     scene.add(ambientLight);
     
     // Main sunlight from the sky (optimized shadow settings)
-    const sunLight = new THREE.DirectionalLight(0xFFFFCC, 1.0); // Bright sunlight
+    sunLight = new THREE.DirectionalLight(0xFFFFCC, 1.0); // Bright sunlight
     sunLight.position.set(10, 20, 10); // Coming from above at an angle
     sunLight.castShadow = true;
     sunLight.shadow.camera.far = 30;
@@ -94,10 +96,13 @@ function init() {
     scene.add(sunLight);
     
     // Secondary fill light for softer shadows
-    const fillLight = new THREE.DirectionalLight(0xFFFFFF, 0.4); // White fill light
+    fillLight = new THREE.DirectionalLight(0xFFFFFF, 0.4); // White fill light
     fillLight.position.set(-10, 8, -10); // Coming from opposite side
     fillLight.castShadow = false;
     scene.add(fillLight);
+    
+    // Setup day/night toggle listener
+    document.addEventListener('dayNightToggle', handleDayNightToggle);
     
     // Load the house model with optimizations
     const loader = new THREE.GLTFLoader();
@@ -161,11 +166,14 @@ function init() {
     
     // Function to add interior lights
     function addInteriorLights() {
-        // Add fewer, optimized point lights inside the house (dimmer for daytime)
+        // Add fewer, optimized point lights inside the house
+        // Intensity will be adjusted based on day/night mode
+        const lightIntensity = isDayMode ? 0.5 : 1.0;
+        
         const interiorLights = [
-            { position: [0, 2, 0], color: 0xFFFFC0, intensity: 0.5, distance: 15 },
-            { position: [5, 2, 0], color: 0xFFFFC0, intensity: 0.5, distance: 15 },
-            { position: [-5, 2, 0], color: 0xFFFFC0, intensity: 0.5, distance: 15 }
+            { position: [0, 2, 0], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 },
+            { position: [5, 2, 0], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 },
+            { position: [-5, 2, 0], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 }
         ];
         
         interiorLights.forEach(light => {
@@ -199,11 +207,15 @@ function setupControls() {
     controls.addEventListener('lock', () => {
         document.getElementById('instructions').style.display = 'none';
         document.getElementById('crosshair').style.opacity = '1';
+        // Keep exit message visible
+        document.getElementById('exit-message').style.display = 'block';
     });
     
     controls.addEventListener('unlock', () => {
         document.getElementById('instructions').style.display = 'block';
         document.getElementById('crosshair').style.opacity = '0';
+        // Keep exit message visible
+        document.getElementById('exit-message').style.display = 'block';
     });
     
     scene.add(controls.getObject());
@@ -339,10 +351,12 @@ function animate() {
         pos.y = Math.max(object9Bounds.minY, Math.min(pos.y, object9Bounds.maxY));
         pos.z = Math.max(object9Bounds.minZ, Math.min(pos.z, object9Bounds.maxZ));
         
-        // Update coordinates display
-        const position = controls.getObject().position;
-        document.getElementById('coordinates').textContent = 
-            `Position: X: ${position.x.toFixed(2)}, Y: ${position.y.toFixed(2)}, Z: ${position.z.toFixed(2)}`;
+        // Update coordinates display if enabled
+        if (performanceMonitor.showPosition) {
+            const position = controls.getObject().position;
+            document.getElementById('coordinates').textContent = 
+                `Position: X: ${position.x.toFixed(2)}, Y: ${position.y.toFixed(2)}, Z: ${position.z.toFixed(2)}`;
+        }
         
         prevTime = time;
     }
@@ -385,6 +399,47 @@ function createHorizon() {
 function updateHorizon() {
     // Function kept for compatibility but no longer does anything
     return;
+}
+
+// Handle day/night toggle
+function handleDayNightToggle(event) {
+    isDayMode = event.detail.isDayMode;
+    
+    if (isDayMode) {
+        // Day mode settings
+        scene.background = new THREE.Color(0x87CEEB); // Light blue sky
+        scene.fog = new THREE.FogExp2(0xCCDDFF, 0.02); // Lighter fog
+        
+        // Adjust lighting for day
+        ambientLight.intensity = 0.6;
+        sunLight.intensity = 1.0;
+        sunLight.color.set(0xFFFFCC); // Bright sunlight
+        fillLight.intensity = 0.4;
+        
+        // Update interior lights if they exist
+        scene.traverse((object) => {
+            if (object.isPointLight) {
+                object.intensity = 0.5; // Dimmer interior lights during day
+            }
+        });
+    } else {
+        // Night mode settings
+        scene.background = new THREE.Color(0x0A1020); // Dark blue night sky
+        scene.fog = new THREE.FogExp2(0x0A1020, 0.03); // Darker, denser fog
+        
+        // Adjust lighting for night
+        ambientLight.intensity = 0.2;
+        sunLight.intensity = 0.1;
+        sunLight.color.set(0xC0C0FF); // Moonlight (blueish)
+        fillLight.intensity = 0.1;
+        
+        // Update interior lights if they exist
+        scene.traverse((object) => {
+            if (object.isPointLight) {
+                object.intensity = 1.0; // Brighter interior lights at night
+            }
+        });
+    }
 }
 
 // Start the game when the page loads

@@ -9,6 +9,7 @@
 <body>
     <div id="game-container"></div>
     <div id="crosshair">+</div>
+    <div id="exit-message">Press ESC to exit</div>
     <div id="instructions">
         <p>Use WASD to move horizontally</p>
         <p>SPACE to fly up, SHIFT to fly down</p>
@@ -18,6 +19,27 @@
     <div id="stats">
         <div id="coordinates">Position: X: 0, Y: 0, Z: 0</div>
         <div id="fps">FPS: 0</div>
+    </div>
+    
+    <div id="gear-icon">⚙️</div>
+    <div id="settings-panel">
+        <div class="settings-header">Settings</div>
+        <div class="settings-option">
+            <input type="checkbox" id="show-fps">
+            <label for="show-fps">Show FPS</label>
+        </div>
+        <div class="settings-option">
+            <input type="checkbox" id="show-position">
+            <label for="show-position">Show Position</label>
+        </div>
+        <div class="settings-option">
+            <input type="checkbox" id="day-night-toggle" checked>
+            <label for="day-night-toggle">Day Mode</label>
+        </div>
+        <div class="settings-option">
+            <input type="checkbox" id="fullscreen-toggle">
+            <label for="fullscreen-toggle">Fullscreen</label>
+        </div>
     </div>
 
     <!-- Use defer to improve page loading performance -->
