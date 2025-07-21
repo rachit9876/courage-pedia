@@ -22,7 +22,7 @@
       justify-content: space-between;
       padding: 16px;
       background-color: #0d0d0d;
-      border: 1px solid #ffeb3b;
+      border: 1px solid #9000ffff;
       border-radius: 8px;
       box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
@@ -166,8 +166,8 @@
   // Show default notification on load
   setTimeout(() => {
     createToast({
-      title: "Upcoming Feature",
-      description: "Web Game is Under Development",
+      title: "New Feature",
+      description: "Web Game is Ready to Play!",
       action: {
         label: "Ok",
         onClick: () => console.log("Ok button clicked")
