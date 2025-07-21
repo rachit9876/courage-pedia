@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D House Explorer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container"></div>
+    <div id="crosshair">+</div>
+    <div id="instructions">
+        <p>Use WASD to move horizontally</p>
+        <p>SPACE to fly up, SHIFT to fly down</p>
+        <p>Mouse to look around</p>
+        <p>Press ESC to unlock mouse</p>
+    </div>
+    <div id="stats">
+        <div id="coordinates">Position: X: 0, Y: 0, Z: 0</div>
+        <div id="fps">FPS: 0</div>
+    </div>
+
+    <!-- Use defer to improve page loading performance -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/PointerLockControls.js" defer></script>
+    <script src="performance.js" defer></script>
+    <script src="lod.js" defer></script>
+    <script src="texture-manager.js" defer></script>
+    <script src="object-pool.js" defer></script>
+    <script src="game.js" defer></script>
+</body>
+</html>
