@@ -10,10 +10,103 @@ let moveDown = false;
 let velocity = new THREE.Vector3();
 let direction = new THREE.Vector3();
 let prevTime = performance.now();
-const speed = 5.0; // Increased movement speed for flying
+const speed = 3.0; // Reduced movement speed for flying
 let horizon; // Horizon plane for fake horizon effect
-let isDayMode = true; // Default to day mode
+let isNightMode = true; // Default to night mode
 let ambientLight, sunLight, fillLight; // Store lights for day/night toggle
+
+// Loading system variables
+let loadingProgress = 0;
+let totalAssets = 1; // We have 1 main asset (new.glb)
+let loadedAssets = 0;
+
+// Loading management functions
+function updateLoadingProgress(progress) {
+    loadingProgress = progress;
+    const loadingBar = document.getElementById('loading-bar');
+    const loadingText = document.getElementById('loading-text');
+    
+    if (loadingBar) {
+        loadingBar.style.width = progress + '%';
+    }
+    
+    if (loadingText) {
+        if (progress < 100) {
+            loadingText.textContent = `Loading... ${Math.round(progress)}%`;
+        } else {
+            loadingText.textContent = 'Ready to play!';
+        }
+    }
+    
+    // Enable play button when fully loaded
+    const playButton = document.getElementById('play-button');
+    if (playButton && progress >= 100) {
+        playButton.disabled = false;
+        playButton.textContent = 'PLAY';
+    }
+}
+
+function hideLoadingScreen() {
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        loadingScreen.classList.add('loading-screen-hidden');
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+        }, 500);
+    }
+}
+
+function initializeGame() {
+    // This function will be called when play button is clicked
+    const playButton = document.getElementById('play-button');
+    if (playButton) {
+        playButton.addEventListener('click', () => {
+            hideLoadingScreen();
+            // Enable pointer lock controls after loading screen is hidden
+            setTimeout(() => {
+                setupControls();
+                animate();
+            }, 500);
+        });
+    }
+}
+
+// Resolution settings
+let currentResolution = 'medium'; // Default resolution
+const resolutionScales = {
+    high: 1.0,
+    medium: 0.75,
+    low: 0.5
+};
+const resolutionSettings = {
+    high: {
+        scale: 1.0,
+        shadowMapSize: 1024,
+        shadowEnabled: true,
+        antialias: true,
+        maxLights: 10,
+        fogDensity: 0.05,
+        drawDistance: 100
+    },
+    medium: {
+        scale: 0.75,
+        shadowMapSize: 512,
+        shadowEnabled: true,
+        antialias: false,
+        maxLights: 6,
+        fogDensity: 0.07,
+        drawDistance: 75
+    },
+    low: {
+        scale: 0.5,
+        shadowMapSize: 256,
+        shadowEnabled: false,
+        antialias: false,
+        maxLights: 3,
+        fogDensity: 0.09,
+        drawDistance: 50
+    }
+};
 
 // Object_9 boundary limits - adjusted to allow more movement in x-z plane
 const object9Bounds = {
@@ -46,10 +139,9 @@ function init() {
     // Create scene
     scene = new THREE.Scene();
     
-    // Set sky color for daytime
-    scene.background = new THREE.Color(0x87CEEB); // Light blue sky color
+    // Set sky color based on night mode
+    updateSceneForNightMode();
     
-    scene.fog = new THREE.FogExp2(0xCCDDFF, 0.02); // Lighter fog for daytime
     
     // Create fake horizon effect
     createHorizon();
@@ -59,57 +151,114 @@ function init() {
     textureManager = new TextureManager();
     objectPool = new ObjectPool();
     
-    // Create camera with optimized settings
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100); // Reduced far plane
-    camera.position.set(-6, 1, 8); // Default spawn position
+    // Create camera with optimized settings based on resolution
+    const settings = resolutionSettings[currentResolution];
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, settings.drawDistance);
+    camera.position.set(9, 1, 9); // Default spawn position
     
     // Set camera for LOD manager
     lodManager.setCamera(camera);
     
-    // Create renderer with optimized settings
+    // Create renderer with optimized settings based on resolution
     renderer = new THREE.WebGLRenderer({ 
-        antialias: false, // Disable antialiasing for performance
+        antialias: settings.antialias,
         powerPreference: 'high-performance',
         precision: 'mediump' // Use medium precision for better performance
     });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio
-    renderer.shadowMap.enabled = true;
+    
+    // Apply resolution scale
+    const scale = settings.scale;
+    renderer.setSize(window.innerWidth * scale, window.innerHeight * scale, false);
+    renderer.domElement.style.width = '100%';
+    renderer.domElement.style.height = '100%';
+    
+    // Set pixel ratio based on resolution
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio * scale, 2));
+    
+    // Configure shadows based on resolution settings
+    renderer.shadowMap.enabled = settings.shadowEnabled;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Better performance shadow map
     document.getElementById('game-container').appendChild(renderer.domElement);
     
     // Set renderer for texture manager
     textureManager.setRenderer(renderer);
     
-    // Add lighting (optimized for daytime)
-    ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.6); // Brighter ambient light for daytime
+    // Add lighting based on night mode
+    ambientLight = new THREE.AmbientLight(0xFFFFFF, isNightMode ? 0.2 : 0.6);
     scene.add(ambientLight);
     
-    // Main sunlight from the sky (optimized shadow settings)
-    sunLight = new THREE.DirectionalLight(0xFFFFCC, 1.0); // Bright sunlight
+    // Main light from the sky (optimized shadow settings based on resolution)
+    sunLight = new THREE.DirectionalLight(
+        isNightMode ? 0xC0C0FF : 0xFFFFCC, // Moonlight or sunlight color
+        isNightMode ? 0.1 : 1.0 // Lower intensity at night
+    );
     sunLight.position.set(10, 20, 10); // Coming from above at an angle
-    sunLight.castShadow = true;
-    sunLight.shadow.camera.far = 30;
-    sunLight.shadow.mapSize.width = 512;
-    sunLight.shadow.mapSize.height = 512;
+    sunLight.castShadow = settings.shadowEnabled;
+    sunLight.shadow.camera.far = settings.drawDistance / 2;
+    sunLight.shadow.mapSize.width = settings.shadowMapSize;
+    sunLight.shadow.mapSize.height = settings.shadowMapSize;
     sunLight.shadow.bias = -0.001;
     scene.add(sunLight);
     
     // Secondary fill light for softer shadows
-    fillLight = new THREE.DirectionalLight(0xFFFFFF, 0.4); // White fill light
+    fillLight = new THREE.DirectionalLight(
+        0xFFFFFF, 
+        isNightMode ? 0.1 : 0.4 // Lower intensity at night
+    );
     fillLight.position.set(-10, 8, -10); // Coming from opposite side
     fillLight.castShadow = false;
     scene.add(fillLight);
     
-    // Setup day/night toggle listener
-    document.addEventListener('dayNightToggle', handleDayNightToggle);
+    // Setup event listeners
+    document.addEventListener('nightModeToggle', handleNightModeToggle);
+    document.addEventListener('resolutionChange', handleResolutionChange);
+    document.addEventListener('resetPosition', handleResetPosition);
     
     // Load the house model with optimizations
     const loader = new THREE.GLTFLoader();
-    loader.load('new.glb', (gltf) => {
-        const house = gltf.scene;
+    
+    // Set up Draco decoder for compressed models
+    const dracoLoader = new THREE.DRACOLoader();
+    dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/libs/draco/');
+    loader.setDRACOLoader(dracoLoader);
+    
+    // Debug loading process
+    console.log('Starting to load model: new.glb');
+    
+    loader.load(
+        'new.glb', 
+        // onLoad callback
+        (gltf) => {
+            console.log('Model loaded successfully, processing scene...');
+            console.log('Scene contains:', gltf.scene.children.length, 'top-level objects');
+            
+            // Update loading progress to 100%
+            updateLoadingProgress(100);
+            
+            // Log all mesh names to debug
+            const meshNames = [];
+            gltf.scene.traverse((child) => {
+                if (child.isMesh) {
+                    meshNames.push(child.name);
+                }
+            });
+            console.log('Found meshes:', meshNames.join(', '));
+            const house = gltf.scene;
         house.traverse((child) => {
             if (child.isMesh) {
+                // Log mesh details for debugging
+                console.log('Processing mesh:', child.name, 'visible:', child.visible);
+                
+                // Ensure mesh is visible
+                child.visible = true;
+                
+                // Special handling for mesh_7
+                if (child.name === 'mesh_7' || child.name.includes('mesh_7')) {
+                    console.log('Found mesh_7, ensuring it is properly configured');
+                    child.visible = true;
+                    child.renderOrder = 1; // Render this mesh first
+                }
+                
                 // Optimize meshes
                 child.castShadow = true;
                 child.receiveShadow = true;
@@ -146,35 +295,70 @@ function init() {
                     material.needsUpdate = true;
                 }
                 
-                // Enable frustum culling
-                child.frustumCulled = true;
-                child.userData.cullable = true;
-                
-                // Reduce console logging
-                if (child.name && child.name.length > 0) {
-                    console.log('Loaded object:', child.name);
+                // Enable frustum culling but disable for mesh_7 to ensure it's always rendered
+                if (child.name === 'mesh_7' || child.name.includes('mesh_7')) {
+                    child.frustumCulled = false;
+                    child.userData.cullable = false;
+                } else {
+                    child.frustumCulled = true;
+                    child.userData.cullable = true;
                 }
+                
+                // Log loaded objects
+                console.log('Loaded object:', child.name, 'visible:', child.visible);
             }
         });
         scene.add(house);
         
         // Add interior lights after house is loaded
         addInteriorLights();
-    }, undefined, (error) => {
+    }, 
+    // onProgress callback
+    (progress) => {
+        if (progress.lengthComputable) {
+            const percentComplete = (progress.loaded / progress.total) * 100;
+            updateLoadingProgress(percentComplete);
+            console.log('Loading progress:', Math.round(percentComplete) + '%');
+        } else {
+            // If we can't compute progress, simulate it
+            const simulatedProgress = Math.min(loadingProgress + 10, 90);
+            updateLoadingProgress(simulatedProgress);
+        }
+    },
+    // onError callback
+    (error) => {
         console.error('An error occurred loading the model:', error);
+        const loadingText = document.getElementById('loading-text');
+        if (loadingText) {
+            loadingText.textContent = 'Error loading model. Please refresh and try again.';
+        }
     });
     
     // Function to add interior lights
     function addInteriorLights() {
         // Add fewer, optimized point lights inside the house
-        // Intensity will be adjusted based on day/night mode
-        const lightIntensity = isDayMode ? 0.5 : 1.0;
+        // Intensity will be adjusted based on night mode
+        const lightIntensity = isNightMode ? 1.0 : 0.5;
         
-        const interiorLights = [
+        // Adjust number of lights based on resolution setting
+        const maxLights = resolutionSettings[currentResolution].maxLights;
+        
+        // Define all possible lights
+        const allLights = [
             { position: [0, 2, 0], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 },
             { position: [5, 2, 0], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 },
-            { position: [-5, 2, 0], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 }
+            { position: [-5, 2, 0], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 },
+            { position: [0, 2, 5], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 },
+            { position: [0, 2, -5], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 },
+            { position: [3, 2, 3], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 },
+            { position: [-3, 2, -3], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 },
+            { position: [3, 2, -3], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 },
+            { position: [-3, 2, 3], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 },
+            { position: [0, 4, 0], color: 0xFFFFC0, intensity: lightIntensity, distance: 15 }
         ];
+        
+        // Use only the number of lights allowed by the current resolution setting
+        const interiorLights = allLights.slice(0, maxLights);
         
         interiorLights.forEach(light => {
             const pointLight = new THREE.PointLight(light.color, light.intensity, light.distance);
@@ -184,14 +368,14 @@ function init() {
         });
     }
     
-    // Setup controls
-    setupControls();
+    // Initialize loading system (don't start controls and animation yet)
+    initializeGame();
     
     // Handle window resize
     window.addEventListener('resize', onWindowResize, false);
     
-    // Start animation loop
-    animate();
+    // Start loading progress simulation for scripts
+    updateLoadingProgress(10);
 }
 
 // Setup pointer lock controls
@@ -271,11 +455,18 @@ function setupControls() {
     document.addEventListener('keyup', onKeyUp);
 }
 
+
+
 // Handle window resize
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    
+    // Apply resolution scale on resize
+    const scale = resolutionSettings[currentResolution].scale;
+    renderer.setSize(window.innerWidth * scale, window.innerHeight * scale, false);
+    renderer.domElement.style.width = '100%';
+    renderer.domElement.style.height = '100%';
 }
 
 // No ground collision check needed for fly mode
@@ -366,6 +557,12 @@ function animate() {
     
     // Only render visible objects with optimized culling
     scene.traverse(object => {
+        // Special handling for mesh_7 - always keep it visible
+        if (object.name === 'mesh_7' || object.name.includes('mesh_7')) {
+            object.visible = true;
+            return;
+        }
+        
         if (object.userData && object.userData.cullable && object.geometry && object.geometry.boundingSphere) {
             // Use object pooling for sphere operations
             const boundingSphere = objectPool.get('sphere', () => new THREE.Sphere());
@@ -389,6 +586,19 @@ function animate() {
     renderer.render(scene, camera);
 }
 
+// Function to update scene based on night mode
+function updateSceneForNightMode() {
+    if (isNightMode) {
+        // Night mode settings
+        scene.background = new THREE.Color(0x0A1020); // Dark blue night sky
+        scene.fog = new THREE.FogExp2(0x0A1020, resolutionSettings[currentResolution].fogDensity * 1.5); // Darker fog
+    } else {
+        // Day mode settings
+        scene.background = new THREE.Color(0x87CEEB); // Light blue sky
+        scene.fog = new THREE.FogExp2(0xCCDDFF, resolutionSettings[currentResolution].fogDensity); // Lighter fog
+    }
+}
+
 // Create fake horizon effect - replaced with bg.png
 function createHorizon() {
     // Horizon functionality removed as we're using bg.png as background
@@ -401,14 +611,89 @@ function updateHorizon() {
     return;
 }
 
-// Handle day/night toggle
-function handleDayNightToggle(event) {
-    isDayMode = event.detail.isDayMode;
+// Handle reset position
+function handleResetPosition() {
+    // Reset player position to coordinates (9, 1, 9)
+    if (controls && controls.getObject()) {
+        controls.getObject().position.set(9, 1, 9);
+        console.log('Position reset to coordinates (9, 1, 9)');
+    }
+}
+
+// Handle resolution change
+function handleResolutionChange(event) {
+    const newResolution = event.detail.resolution;
     
-    if (isDayMode) {
+    // Skip if resolution hasn't changed
+    if (newResolution === currentResolution) return;
+    
+    // Update current resolution
+    currentResolution = newResolution;
+    const settings = resolutionSettings[currentResolution];
+    
+    // Update camera draw distance
+    camera.far = settings.drawDistance;
+    camera.updateProjectionMatrix();
+    
+    // Update renderer resolution
+    const scale = settings.scale;
+    renderer.setSize(window.innerWidth * scale, window.innerHeight * scale, false);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio * scale, 2));
+    
+    // Update shadow settings
+    renderer.shadowMap.enabled = settings.shadowEnabled;
+    if (sunLight) {
+        sunLight.castShadow = settings.shadowEnabled;
+        sunLight.shadow.mapSize.width = settings.shadowMapSize;
+        sunLight.shadow.mapSize.height = settings.shadowMapSize;
+        sunLight.shadow.camera.far = settings.drawDistance / 2;
+        sunLight.shadow.needsUpdate = true;
+    }
+    
+    // Update fog density based on night mode
+    if (scene && scene.fog) {
+        const fogDensity = isNightMode ? 
+            settings.fogDensity * 1.5 : 
+            settings.fogDensity;
+        scene.fog.density = fogDensity;
+    }
+    
+    // Update interior lights
+    const maxLights = settings.maxLights;
+    let lightCount = 0;
+    
+    scene.traverse((object) => {
+        if (object.isPointLight && object !== sunLight && object !== fillLight && object !== ambientLight) {
+            // Show only the allowed number of lights for this resolution
+            object.visible = lightCount < maxLights;
+            lightCount++;
+        }
+    });
+    
+    console.log(`Resolution changed to ${currentResolution}`);
+}
+
+// Function to update scene based on night mode
+function updateSceneForNightMode() {
+    if (isNightMode) {
+        // Night mode settings
+        scene.background = new THREE.Color(0x0A1020); // Dark blue night sky
+        scene.fog = new THREE.FogExp2(0x0A1020, resolutionSettings[currentResolution].fogDensity * 1.5); // Darker fog
+    } else {
         // Day mode settings
         scene.background = new THREE.Color(0x87CEEB); // Light blue sky
-        scene.fog = new THREE.FogExp2(0xCCDDFF, 0.02); // Lighter fog
+        scene.fog = new THREE.FogExp2(0xCCDDFF, resolutionSettings[currentResolution].fogDensity); // Lighter fog
+    }
+}
+
+// Handle night mode toggle
+function handleNightModeToggle(event) {
+    isNightMode = event.detail.isNightMode;
+    
+    if (!isNightMode) {
+        // Day mode settings
+        scene.background = new THREE.Color(0x87CEEB); // Light blue sky
+        scene.fog = new THREE.FogExp2(0xCCDDFF, resolutionSettings[currentResolution].fogDensity); // Fog based on resolution
         
         // Adjust lighting for day
         ambientLight.intensity = 0.6;
@@ -425,7 +710,7 @@ function handleDayNightToggle(event) {
     } else {
         // Night mode settings
         scene.background = new THREE.Color(0x0A1020); // Dark blue night sky
-        scene.fog = new THREE.FogExp2(0x0A1020, 0.03); // Darker, denser fog
+        scene.fog = new THREE.FogExp2(0x0A1020, resolutionSettings[currentResolution].fogDensity * 1.5); // Darker fog based on resolution
         
         // Adjust lighting for night
         ambientLight.intensity = 0.2;
@@ -446,6 +731,97 @@ function handleDayNightToggle(event) {
 window.addEventListener('load', () => {
     // Initialize performance monitor directly
     performanceMonitor = new PerformanceMonitor();
+    
+    // Add event listener for reset position button
+    const resetPositionButton = document.getElementById('reset-position');
+    if (resetPositionButton) {
+        resetPositionButton.addEventListener('click', () => {
+            // Dispatch a custom event to reset position
+            document.dispatchEvent(new CustomEvent('resetPosition'));
+        });
+    }
+    
+    // Add event listener for gear icon to toggle settings panel
+    const gearIcon = document.getElementById('gear-icon');
+    const settingsPanel = document.getElementById('settings-panel');
+    if (gearIcon && settingsPanel) {
+        gearIcon.addEventListener('click', () => {
+            // Toggle settings panel visibility
+            settingsPanel.style.display = settingsPanel.style.display === 'none' || settingsPanel.style.display === '' ? 'block' : 'none';
+        });
+    }
+    
+    // Add event listeners for other settings options
+    const showFpsCheckbox = document.getElementById('show-fps');
+    if (showFpsCheckbox) {
+        showFpsCheckbox.addEventListener('change', () => {
+            performanceMonitor.showFPS = showFpsCheckbox.checked;
+            document.getElementById('fps').style.display = showFpsCheckbox.checked ? 'block' : 'none';
+        });
+    }
+    
+    const showPositionCheckbox = document.getElementById('show-position');
+    if (showPositionCheckbox) {
+        showPositionCheckbox.addEventListener('change', () => {
+            performanceMonitor.showPosition = showPositionCheckbox.checked;
+            document.getElementById('coordinates').style.display = showPositionCheckbox.checked ? 'block' : 'none';
+        });
+    }
+    
+    const nightModeToggle = document.getElementById('night-mode-toggle');
+    if (nightModeToggle) {
+        nightModeToggle.addEventListener('change', () => {
+            document.dispatchEvent(new CustomEvent('nightModeToggle', { detail: { isNightMode: nightModeToggle.checked } }));
+        });
+    }
+    
+    const resolutionSelect = document.getElementById('resolution-select');
+    if (resolutionSelect) {
+        resolutionSelect.addEventListener('change', () => {
+            document.dispatchEvent(new CustomEvent('resolutionChange', { detail: { resolution: resolutionSelect.value } }));
+        });
+    }
+    
     // Start the game
     init();
 });
+// Handle night mode toggle
+function handleNightModeToggle(event) {
+    isNightMode = event.detail.isNightMode;
+    
+    if (isNightMode) {
+        // Night mode settings
+        scene.background = new THREE.Color(0x0A1020); // Dark blue night sky
+        scene.fog = new THREE.FogExp2(0x0A1020, resolutionSettings[currentResolution].fogDensity * 1.5); // Darker fog based on resolution
+        
+        // Adjust lighting for night
+        ambientLight.intensity = 0.2;
+        sunLight.intensity = 0.1;
+        sunLight.color.set(0xC0C0FF); // Moonlight (blueish)
+        fillLight.intensity = 0.1;
+        
+        // Update interior lights if they exist
+        scene.traverse((object) => {
+            if (object.isPointLight) {
+                object.intensity = 1.0; // Brighter interior lights at night
+            }
+        });
+    } else {
+        // Day mode settings
+        scene.background = new THREE.Color(0x87CEEB); // Light blue sky
+        scene.fog = new THREE.FogExp2(0xCCDDFF, resolutionSettings[currentResolution].fogDensity); // Fog based on resolution
+        
+        // Adjust lighting for day
+        ambientLight.intensity = 0.6;
+        sunLight.intensity = 1.0;
+        sunLight.color.set(0xFFFFCC); // Bright sunlight
+        fillLight.intensity = 0.4;
+        
+        // Update interior lights if they exist
+        scene.traverse((object) => {
+            if (object.isPointLight) {
+                object.intensity = 0.5; // Dimmer interior lights during day
+            }
+        });
+    }
+}

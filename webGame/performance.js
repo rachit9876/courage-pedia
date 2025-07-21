@@ -31,8 +31,9 @@ class PerformanceMonitor {
         const settingsPanel = document.getElementById('settings-panel');
         const showFpsCheckbox = document.getElementById('show-fps');
         const showPositionCheckbox = document.getElementById('show-position');
-        const dayNightToggle = document.getElementById('day-night-toggle');
+        const nightModeToggle = document.getElementById('night-mode-toggle');
         const fullscreenToggle = document.getElementById('fullscreen-toggle');
+        const resolutionSelect = document.getElementById('resolution-select');
         const fpsDisplay = document.getElementById('fps');
         const coordinatesDisplay = document.getElementById('coordinates');
         
@@ -61,13 +62,12 @@ class PerformanceMonitor {
             coordinatesDisplay.style.display = this.showPosition ? 'block' : 'none';
         });
         
-        // Handle Day/Night toggle change
-        dayNightToggle.addEventListener('change', () => {
-            const isDayMode = dayNightToggle.checked;
-            dayNightToggle.nextElementSibling.textContent = isDayMode ? 'Day Mode' : 'Night Mode';
+        // Handle Night Mode toggle change
+        nightModeToggle.addEventListener('change', () => {
+            const isNightMode = nightModeToggle.checked;
             
             // Dispatch custom event for game.js to handle
-            const event = new CustomEvent('dayNightToggle', { detail: { isDayMode } });
+            const event = new CustomEvent('nightModeToggle', { detail: { isNightMode } });
             document.dispatchEvent(event);
         });
         
@@ -88,6 +88,24 @@ class PerformanceMonitor {
         document.addEventListener('fullscreenchange', () => {
             fullscreenToggle.checked = document.fullscreenElement !== null;
         });
+        
+        // Handle resolution changes
+        resolutionSelect.addEventListener('change', () => {
+            const resolution = resolutionSelect.value;
+            // Dispatch custom event for game.js to handle
+            const event = new CustomEvent('resolutionChange', { detail: { resolution } });
+            document.dispatchEvent(event);
+        });
+        
+        // Handle reset position button
+        const resetPositionButton = document.getElementById('reset-position');
+        if (resetPositionButton) {
+            resetPositionButton.addEventListener('click', () => {
+                // Dispatch custom event for game.js to handle
+                const event = new CustomEvent('resetPosition');
+                document.dispatchEvent(event);
+            });
+        }
         
         // Close panel when clicking elsewhere
         document.addEventListener('click', (event) => {
@@ -110,7 +128,7 @@ class PerformanceMonitor {
         // Update FPS display if enabled
         if (this.showFPS) {
             document.getElementById('fps').textContent = 
-                `FPS: ${this.stats.fps} | Draw calls: ${this.stats.drawCalls} | Triangles: ${this.stats.triangles}`;
+                `FPS: ${this.stats.fps} | Draw calls: ${this.stats.drawCalls} | Triangles: ${this.stats.triangles} | Res: ${currentResolution}`;
         }
     }
     

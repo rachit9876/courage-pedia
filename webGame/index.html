@@ -5,16 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D House Explorer</title>
     <link rel="stylesheet" href="style.css">
+    <script>
+        // Mobile device detection and restriction
+        function isMobileDevice() {
+            return (window.innerWidth <= 800) || 
+                   (navigator.userAgent.match(/Android/i)) || 
+                   (navigator.userAgent.match(/iPhone|iPad|iPod/i)) || 
+                   (navigator.userAgent.match(/Opera Mini/i)) || 
+                   (navigator.userAgent.match(/IEMobile/i));
+        }
+        
+        window.addEventListener('load', function() {
+            if (isMobileDevice()) {
+                document.getElementById('mobile-warning').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    </script>
 </head>
 <body>
+    <!-- Mobile Warning Screen -->
+    <div id="mobile-warning">
+        <div class="warning-content">
+            <div class="warning-icon">⚠️</div>
+            <h2>Desktop Only</h2>
+            <p>This 3D experience requires a desktop computer.</p>
+            <p>Please open this site on a PC for the best experience.</p>
+        </div>
+    </div>
+    
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div id="loading-content">
+            <h1>3D House Explorer</h1>
+            <div id="loading-bar-container">
+                <div id="loading-bar"></div>
+            </div>
+            <div id="loading-text">Loading...</div>
+            <button id="play-button" disabled>PLAY</button>
+        </div>
+    </div>
+
     <div id="game-container"></div>
     <div id="crosshair">+</div>
     <div id="exit-message">Press ESC to exit</div>
     <div id="instructions">
-        <p>Use WASD to move horizontally</p>
-        <p>SPACE to fly up, SHIFT to fly down</p>
+        <p>Move: W,A,S,D</p>
+        <p>FLY UP: SPACE BAR</p>
+        <p>FLY DOWN: SHIFT</p>
         <p>Mouse to look around</p>
-        <p>Press ESC to unlock mouse</p>
     </div>
     <div id="stats">
         <div id="coordinates">Position: X: 0, Y: 0, Z: 0</div>
@@ -33,23 +72,55 @@
             <label for="show-position">Show Position</label>
         </div>
         <div class="settings-option">
-            <input type="checkbox" id="day-night-toggle" checked>
-            <label for="day-night-toggle">Day Mode</label>
+            <input type="checkbox" id="night-mode-toggle" checked>
+            <label for="night-mode-toggle">Night Mode</label>
         </div>
         <div class="settings-option">
             <input type="checkbox" id="fullscreen-toggle">
             <label for="fullscreen-toggle">Fullscreen</label>
+        </div>
+        <div class="settings-option">
+            <label for="resolution-select">Resolution:</label>
+            <select id="resolution-select">
+                <option value="high">High</option>
+                <option value="medium" selected>Medium</option>
+                <option value="low">Low</option>
+            </select>
+        </div>
+        <div class="settings-option">
+            <button id="reset-position">Reset Position</button>
         </div>
     </div>
 
     <!-- Use defer to improve page loading performance -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/DRACOLoader.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/PointerLockControls.js" defer></script>
     <script src="performance.js" defer></script>
     <script src="lod.js" defer></script>
     <script src="texture-manager.js" defer></script>
     <script src="object-pool.js" defer></script>
     <script src="game.js" defer></script>
+    <script>
+        // Simple script to toggle settings panel
+        document.addEventListener('DOMContentLoaded', function() {
+            const gearIcon = document.getElementById('gear-icon');
+            const settingsPanel = document.getElementById('settings-panel');
+            const resetButton = document.getElementById('reset-position');
+            
+            gearIcon.addEventListener('click', function() {
+                if (settingsPanel.style.display === 'block') {
+                    settingsPanel.style.display = 'none';
+                } else {
+                    settingsPanel.style.display = 'block';
+                }
+            });
+            
+            resetButton.addEventListener('click', function() {
+                document.dispatchEvent(new CustomEvent('resetPosition'));
+            });
+        });
+    </script>
 </body>
 </html>
