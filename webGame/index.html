@@ -72,8 +72,12 @@
             <label for="show-position">Show Position</label>
         </div>
         <div class="settings-option">
-            <input type="checkbox" id="night-mode-toggle" checked>
-            <label for="night-mode-toggle">Night Mode</label>
+            <label for="time-mode-select">Time of Day:</label>
+            <select id="time-mode-select">
+                <option value="morning">Morning</option>
+                <option value="night" selected>Night</option>
+                <option value="auto">Auto (Day/Night Cycle)</option>
+            </select>
         </div>
         <div class="settings-option">
             <input type="checkbox" id="fullscreen-toggle">
@@ -85,6 +89,15 @@
                 <option value="high">High</option>
                 <option value="medium" selected>Medium</option>
                 <option value="low">Low</option>
+            </select>
+        </div>
+        <div class="settings-option">
+            <label for="weather-select">Weather Effects:</label>
+            <select id="weather-select">
+                <option value="none" selected>None</option>
+                <option value="rain">Rain</option>
+                <option value="snow">Snow</option>
+                <option value="fog">Heavy Fog</option>
             </select>
         </div>
         <div class="settings-option">

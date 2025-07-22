@@ -13,7 +13,26 @@ let prevTime = performance.now();
 const speed = 3.0; // Reduced movement speed for flying
 let horizon; // Horizon plane for fake horizon effect
 let isNightMode = true; // Default to night mode
+let timeMode = 'night'; // 'morning', 'night', 'auto'
+let dayNightCycle = {
+    isAuto: false,
+    startTime: 0,
+    cycleDuration: 120000, // 2 minutes in milliseconds
+    currentTime: 0
+};
 let ambientLight, sunLight, fillLight; // Store lights for day/night toggle
+
+// Weather system variables
+let weatherSystem = {
+    type: 'none',
+    particles: null,
+    particleCount: 0,
+    enabled: false
+};
+let rainGeometry, snowGeometry, weatherMaterial;
+let weatherParticles = null;
+let houseMesh = null; // Reference to Object_40 (house mesh)
+let raycaster = new THREE.Raycaster(); // For collision detection
 
 // Loading system variables
 let loadingProgress = 0;
@@ -84,18 +103,18 @@ const resolutionSettings = {
         shadowMapSize: 1024,
         shadowEnabled: true,
         antialias: true,
-        maxLights: 10,
-        fogDensity: 0.05,
-        drawDistance: 100
+        maxLights: 3,
+        fogDensity: 0.09,
+        drawDistance: 50
     },
     medium: {
         scale: 0.75,
         shadowMapSize: 512,
         shadowEnabled: true,
         antialias: false,
-        maxLights: 6,
-        fogDensity: 0.07,
-        drawDistance: 75
+        maxLights: 3,
+        fogDensity: 0.09,
+        drawDistance: 50
     },
     low: {
         scale: 0.5,
@@ -210,9 +229,10 @@ function init() {
     scene.add(fillLight);
     
     // Setup event listeners
-    document.addEventListener('nightModeToggle', handleNightModeToggle);
+    document.addEventListener('timeModeChange', handleTimeModeChange);
     document.addEventListener('resolutionChange', handleResolutionChange);
     document.addEventListener('resetPosition', handleResetPosition);
+    document.addEventListener('weatherChange', handleWeatherChange);
     
     // Load the house model with optimizations
     const loader = new THREE.GLTFLoader();
@@ -244,6 +264,24 @@ function init() {
             });
             console.log('Found meshes:', meshNames.join(', '));
             const house = gltf.scene;
+            
+            // Find and store reference to house mesh (Object_40 or similar)
+            gltf.scene.traverse((child) => {
+                if (child.isMesh && (
+                    child.name === 'Object_40' || 
+                    child.name.includes('Object_40') ||
+                    child.name.toLowerCase().includes('house') ||
+                    child.name.includes('mesh_0') || // Common house mesh name
+                    child.name.includes('Mesh_0')
+                )) {
+                    houseMesh = child;
+                    // Ensure bounding box is computed for collision detection
+                    if (child.geometry && !child.geometry.boundingBox) {
+                        child.geometry.computeBoundingBox();
+                    }
+                    console.log('Found potential house mesh:', child.name, 'Bounding box:', child.geometry.boundingBox);
+                }
+            });
         house.traverse((child) => {
             if (child.isMesh) {
                 // Log mesh details for debugging
@@ -257,6 +295,24 @@ function init() {
                     console.log('Found mesh_7, ensuring it is properly configured');
                     child.visible = true;
                     child.renderOrder = 1; // Render this mesh first
+                }
+                
+                // Hide Object_13 completely (check multiple variations)
+                if (child.name === 'Object_13' || 
+                    child.name.includes('Object_13') || 
+                    child.name === 'Object13' || 
+                    child.name.includes('Object13') ||
+                    child.name.toLowerCase().includes('object_13') ||
+                    child.name.toLowerCase().includes('object13')) {
+                    console.log('Found Object_13 (or variant), hiding it:', child.name);
+                    child.visible = false;
+                    child.castShadow = false;
+                    child.receiveShadow = false;
+                    // Also try to remove it from rendering entirely
+                    child.frustumCulled = true;
+                    child.renderOrder = -1;
+                    // Don't apply default optimization to hidden objects
+                    return;
                 }
                 
                 // Optimize meshes
@@ -309,6 +365,38 @@ function init() {
             }
         });
         scene.add(house);
+        
+        // Final pass to ensure Object_13 is completely hidden
+        console.log('=== Final pass to hide Object_13 ===');
+        scene.traverse((child) => {
+            if (child.isMesh) {
+                // Log all mesh names for debugging
+                console.log('Mesh found:', child.name, 'visible:', child.visible);
+                
+                // Double-check for Object_13 variations
+                if (child.name === 'Object_13' || 
+                    child.name.includes('Object_13') || 
+                    child.name === 'Object13' || 
+                    child.name.includes('Object13') ||
+                    child.name.toLowerCase().includes('object_13') ||
+                    child.name.toLowerCase().includes('object13')) {
+                    
+                    console.log('HIDING Object_13 variant:', child.name);
+                    child.visible = false;
+                    child.castShadow = false;
+                    child.receiveShadow = false;
+                    child.frustumCulled = true;
+                    child.renderOrder = -1;
+                    
+                    // Try to completely remove from scene
+                    if (child.parent) {
+                        console.log('Removing Object_13 from parent');
+                        child.parent.remove(child);
+                    }
+                }
+            }
+        });
+        console.log('=== End final pass ===');
         
         // Add interior lights after house is loaded
         addInteriorLights();
@@ -512,6 +600,11 @@ function animate() {
         frameCount = 0;
     }
     
+    // Update auto day/night cycle
+    if (dayNightCycle.isAuto) {
+        updateDayNightCycle(time);
+    }
+    
     if (controls.isLocked) {
         const delta = (time - prevTime) / 1000;
         
@@ -580,6 +673,9 @@ function animate() {
     // Update LOD levels
     lodManager.update();
     
+    // Update weather system
+    updateWeatherSystem(delta);
+    
     // Update horizon position to follow player
     updateHorizon();
     
@@ -603,6 +699,194 @@ function updateSceneForNightMode() {
 function createHorizon() {
     // Horizon functionality removed as we're using bg.png as background
     horizon = null; // Set to null since we're not using it anymore
+}
+
+// Weather Effects System
+function createWeatherSystem(type) {
+    // Remove existing weather system if any
+    if (weatherParticles) {
+        scene.remove(weatherParticles);
+        if (rainGeometry) rainGeometry.dispose();
+        if (snowGeometry) snowGeometry.dispose();
+        if (weatherMaterial) weatherMaterial.dispose();
+        weatherParticles = null;
+    }
+    
+    if (type === 'none') {
+        weatherSystem.enabled = false;
+        return;
+    }
+    
+    weatherSystem.type = type;
+    weatherSystem.enabled = true;
+    
+    if (type === 'rain') {
+        createRainEffect();
+    } else if (type === 'snow') {
+        createSnowEffect();
+    } else if (type === 'fog') {
+        createHeavyFogEffect();
+    }
+}
+
+function createRainEffect() {
+    const particleCount = 800;
+    rainGeometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = new Float32Array(particleCount * 3);
+    
+    for (let i = 0; i < particleCount * 3; i += 3) {
+        // Random position in a large area around the player
+        positions[i] = (Math.random() - 0.5) * 100; // x
+        positions[i + 1] = Math.random() * 50 + 20; // y (above ground)
+        positions[i + 2] = (Math.random() - 0.5) * 100; // z
+        
+        // Rain falls downward with slight randomness
+        velocities[i] = (Math.random() - 0.5) * 0.5; // x velocity
+        velocities[i + 1] = -10 - Math.random() * 5; // y velocity (falling)
+        velocities[i + 2] = (Math.random() - 0.5) * 0.5; // z velocity
+    }
+    
+    rainGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    rainGeometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+    
+    weatherMaterial = new THREE.PointsMaterial({
+        color: 0x77aaff,
+        size: 0.1,
+        transparent: true,
+        opacity: 0.7
+    });
+    
+    weatherParticles = new THREE.Points(rainGeometry, weatherMaterial);
+    scene.add(weatherParticles);
+    weatherSystem.particleCount = particleCount;
+}
+
+function createSnowEffect() {
+    const particleCount = 500;
+    snowGeometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = new Float32Array(particleCount * 3);
+    
+    for (let i = 0; i < particleCount * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * 80; // x
+        positions[i + 1] = Math.random() * 50 + 15; // y
+        positions[i + 2] = (Math.random() - 0.5) * 80; // z
+        
+        // Snow falls slower and more randomly
+        velocities[i] = (Math.random() - 0.5) * 1; // x velocity
+        velocities[i + 1] = -1 - Math.random() * 2; // y velocity (slow falling)
+        velocities[i + 2] = (Math.random() - 0.5) * 1; // z velocity
+    }
+    
+    snowGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    snowGeometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+    
+    weatherMaterial = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.3,
+        transparent: true,
+        opacity: 0.8
+    });
+    
+    weatherParticles = new THREE.Points(snowGeometry, weatherMaterial);
+    scene.add(weatherParticles);
+    weatherSystem.particleCount = particleCount;
+}
+
+function createHeavyFogEffect() {
+    // Heavy fog increases the existing fog density significantly
+    if (scene.fog) {
+        const baseDensity = resolutionSettings[currentResolution].fogDensity;
+        const fogMultiplier = isNightMode ? 4.0 : 3.0; // Even denser fog
+        scene.fog.density = baseDensity * fogMultiplier;
+        
+        // Change fog color to be more dramatic
+        if (isNightMode) {
+            scene.fog.color.set(0x050510); // Very dark fog
+        } else {
+            scene.fog.color.set(0x999999); // Gray fog
+        }
+    }
+    weatherSystem.enabled = true;
+}
+
+function updateWeatherSystem(deltaTime) {
+    if (!weatherSystem.enabled || !weatherParticles) return;
+    
+    if (weatherSystem.type === 'rain' || weatherSystem.type === 'snow') {
+        const positions = weatherParticles.geometry.attributes.position.array;
+        const velocities = weatherParticles.geometry.attributes.velocity.array;
+        
+        for (let i = 0; i < weatherSystem.particleCount * 3; i += 3) {
+            // Update positions based on velocities
+            positions[i] += velocities[i] * deltaTime;
+            positions[i + 1] += velocities[i + 1] * deltaTime;
+            positions[i + 2] += velocities[i + 2] * deltaTime;
+            
+            // Check collision with house mesh
+            let shouldRespawn = false;
+            
+            if (houseMesh) {
+                // Create a point for the particle position
+                const particlePosition = new THREE.Vector3(
+                    positions[i],
+                    positions[i + 1],
+                    positions[i + 2]
+                );
+                
+                // Check if particle is inside house bounding box (simple collision)
+                const houseBoundingBox = houseMesh.geometry.boundingBox;
+                if (houseBoundingBox) {
+                    // Transform bounding box to world coordinates
+                    const worldBoundingBox = houseBoundingBox.clone();
+                    worldBoundingBox.applyMatrix4(houseMesh.matrixWorld);
+                    
+                    // Check if particle is inside the house bounding box
+                    if (worldBoundingBox.containsPoint(particlePosition)) {
+                        shouldRespawn = true;
+                        console.log('Particle collided with house and will be respawned');
+                    }
+                }
+            }
+            
+            // Reset particles that fall below ground, go too far, or hit the house
+            if (shouldRespawn ||
+                positions[i + 1] < -5 || 
+                Math.abs(positions[i] - camera.position.x) > 50 || 
+                Math.abs(positions[i + 2] - camera.position.z) > 50) {
+                
+                // Respawn particle above player, but outside house area
+                let newX, newZ;
+                let attempts = 0;
+                const maxAttempts = 10;
+                
+                do {
+                    newX = camera.position.x + (Math.random() - 0.5) * 50;
+                    newZ = camera.position.z + (Math.random() - 0.5) * 50;
+                    attempts++;
+                } while (houseMesh && isPositionInsideHouse(newX, newZ) && attempts < maxAttempts);
+                
+                positions[i] = newX;
+                positions[i + 1] = camera.position.y + 25 + Math.random() * 25;
+                positions[i + 2] = newZ;
+            }
+        }
+        
+        weatherParticles.geometry.attributes.position.needsUpdate = true;
+    }
+}
+
+// Helper function to check if a position is inside the house
+function isPositionInsideHouse(x, z) {
+    if (!houseMesh || !houseMesh.geometry.boundingBox) return false;
+    
+    const houseBoundingBox = houseMesh.geometry.boundingBox.clone();
+    houseBoundingBox.applyMatrix4(houseMesh.matrixWorld);
+    
+    // Check only X and Z coordinates (ignore Y for spawning)
+    return (x >= houseBoundingBox.min.x && x <= houseBoundingBox.max.x &&
+            z >= houseBoundingBox.min.z && z <= houseBoundingBox.max.z);
 }
 
 // Update horizon position to follow player - no longer needed with bg.png
@@ -671,6 +955,29 @@ function handleResolutionChange(event) {
     });
     
     console.log(`Resolution changed to ${currentResolution}`);
+}
+
+// Handle weather change
+function handleWeatherChange(event) {
+    const newWeatherType = event.detail.weatherType;
+    console.log(`Weather changed to ${newWeatherType}`);
+    
+    // Reset fog to normal levels first
+    if (scene.fog && weatherSystem.type === 'fog') {
+        const baseDensity = resolutionSettings[currentResolution].fogDensity;
+        const fogDensity = isNightMode ? baseDensity * 1.5 : baseDensity;
+        scene.fog.density = fogDensity;
+        
+        // Reset fog color
+        if (isNightMode) {
+            scene.fog.color.set(0x0A1020);
+        } else {
+            scene.fog.color.set(0xCCDDFF);
+        }
+    }
+    
+    // Create new weather system
+    createWeatherSystem(newWeatherType);
 }
 
 // Function to update scene based on night mode
@@ -768,13 +1075,6 @@ window.addEventListener('load', () => {
         });
     }
     
-    const nightModeToggle = document.getElementById('night-mode-toggle');
-    if (nightModeToggle) {
-        nightModeToggle.addEventListener('change', () => {
-            document.dispatchEvent(new CustomEvent('nightModeToggle', { detail: { isNightMode: nightModeToggle.checked } }));
-        });
-    }
-    
     const resolutionSelect = document.getElementById('resolution-select');
     if (resolutionSelect) {
         resolutionSelect.addEventListener('change', () => {
@@ -782,46 +1082,142 @@ window.addEventListener('load', () => {
         });
     }
     
+    const weatherSelect = document.getElementById('weather-select');
+    if (weatherSelect) {
+        weatherSelect.addEventListener('change', () => {
+            document.dispatchEvent(new CustomEvent('weatherChange', { detail: { weatherType: weatherSelect.value } }));
+        });
+    }
+    
     // Start the game
     init();
 });
-// Handle night mode toggle
-function handleNightModeToggle(event) {
-    isNightMode = event.detail.isNightMode;
+
+// Handle time mode change
+function handleTimeModeChange(event) {
+    timeMode = event.detail.timeMode;
     
-    if (isNightMode) {
-        // Night mode settings
-        scene.background = new THREE.Color(0x0A1020); // Dark blue night sky
-        scene.fog = new THREE.FogExp2(0x0A1020, resolutionSettings[currentResolution].fogDensity * 1.5); // Darker fog based on resolution
-        
-        // Adjust lighting for night
-        ambientLight.intensity = 0.2;
-        sunLight.intensity = 0.1;
-        sunLight.color.set(0xC0C0FF); // Moonlight (blueish)
-        fillLight.intensity = 0.1;
-        
-        // Update interior lights if they exist
-        scene.traverse((object) => {
-            if (object.isPointLight) {
-                object.intensity = 1.0; // Brighter interior lights at night
-            }
-        });
-    } else {
-        // Day mode settings
-        scene.background = new THREE.Color(0x87CEEB); // Light blue sky
-        scene.fog = new THREE.FogExp2(0xCCDDFF, resolutionSettings[currentResolution].fogDensity); // Fog based on resolution
-        
-        // Adjust lighting for day
-        ambientLight.intensity = 0.6;
-        sunLight.intensity = 1.0;
-        sunLight.color.set(0xFFFFCC); // Bright sunlight
-        fillLight.intensity = 0.4;
-        
-        // Update interior lights if they exist
-        scene.traverse((object) => {
-            if (object.isPointLight) {
-                object.intensity = 0.5; // Dimmer interior lights during day
-            }
-        });
+    switch (timeMode) {
+        case 'morning':
+            dayNightCycle.isAuto = false;
+            setDayMode();
+            break;
+        case 'night':
+            dayNightCycle.isAuto = false;
+            setNightMode();
+            break;
+        case 'auto':
+            dayNightCycle.isAuto = true;
+            dayNightCycle.startTime = performance.now();
+            dayNightCycle.currentTime = 0;
+            break;
     }
+}
+
+// Function to update auto day/night cycle
+function updateDayNightCycle(currentTime) {
+    if (!dayNightCycle.isAuto) return;
+    
+    dayNightCycle.currentTime = (currentTime - dayNightCycle.startTime) % dayNightCycle.cycleDuration;
+    const cycleProgress = dayNightCycle.currentTime / dayNightCycle.cycleDuration;
+    
+    // Smooth transition between day and night
+    // 0.0 to 0.5 = day to night transition
+    // 0.5 to 1.0 = night to day transition
+    const nightIntensity = Math.sin(cycleProgress * Math.PI * 2) * 0.5 + 0.5;
+    
+    // Update sky color
+    const dayColor = new THREE.Color(0x87CEEB); // Light blue
+    const nightColor = new THREE.Color(0x0A1020); // Dark blue
+    const skyColor = dayColor.clone().lerp(nightColor, nightIntensity);
+    scene.background = skyColor;
+    
+    // Update fog
+    const dayFogColor = new THREE.Color(0xCCDDFF);
+    const nightFogColor = new THREE.Color(0x0A1020);
+    const fogColor = dayFogColor.clone().lerp(nightFogColor, nightIntensity);
+    
+    if (weatherSystem.enabled && weatherSystem.type === 'fog') {
+        const baseDensity = resolutionSettings[currentResolution].fogDensity;
+        const fogDensity = baseDensity * (3.0 + nightIntensity); // Darker fog at night
+        scene.fog = new THREE.FogExp2(fogColor.getHex(), fogDensity);
+    } else {
+        const baseDensity = resolutionSettings[currentResolution].fogDensity;
+        const fogDensity = baseDensity * (1.0 + nightIntensity * 0.5);
+        scene.fog = new THREE.FogExp2(fogColor.getHex(), fogDensity);
+    }
+    
+    // Update lighting
+    ambientLight.intensity = 0.6 - (nightIntensity * 0.4); // 0.6 to 0.2
+    sunLight.intensity = 1.0 - (nightIntensity * 0.9); // 1.0 to 0.1
+    fillLight.intensity = 0.4 - (nightIntensity * 0.3); // 0.4 to 0.1
+    
+    // Update light colors
+    const dayLightColor = new THREE.Color(0xFFFFCC); // Warm sunlight
+    const nightLightColor = new THREE.Color(0xC0C0FF); // Cool moonlight
+    const lightColor = dayLightColor.clone().lerp(nightLightColor, nightIntensity);
+    sunLight.color = lightColor;
+    
+    // Update interior lights
+    scene.traverse((object) => {
+        if (object.isPointLight) {
+            object.intensity = 0.5 + (nightIntensity * 0.5); // 0.5 to 1.0
+        }
+    });
+}
+
+// Set day mode
+function setDayMode() {
+    isNightMode = false;
+    
+    // Day mode settings
+    scene.background = new THREE.Color(0x87CEEB); // Light blue sky
+    
+    // Handle fog based on current weather
+    if (weatherSystem.enabled && weatherSystem.type === 'fog') {
+        scene.fog = new THREE.FogExp2(0x999999, resolutionSettings[currentResolution].fogDensity * 3.0); // Gray heavy fog
+    } else {
+        scene.fog = new THREE.FogExp2(0xCCDDFF, resolutionSettings[currentResolution].fogDensity); // Regular day fog
+    }
+    
+    // Adjust lighting for day
+    ambientLight.intensity = 0.6;
+    sunLight.intensity = 1.0;
+    sunLight.color.set(0xFFFFCC); // Bright sunlight
+    fillLight.intensity = 0.4;
+    
+    // Update interior lights
+    scene.traverse((object) => {
+        if (object.isPointLight) {
+            object.intensity = 0.5; // Dimmer interior lights during day
+        }
+    });
+}
+
+// Set night mode
+function setNightMode() {
+    isNightMode = true;
+    
+    // Night mode settings
+    scene.background = new THREE.Color(0x0A1020); // Dark blue night sky
+    
+    // Handle fog based on current weather
+    if (weatherSystem.enabled && weatherSystem.type === 'fog') {
+        scene.fog = new THREE.FogExp2(0x050510, resolutionSettings[currentResolution].fogDensity * 4.0); // Very dark heavy fog
+    } else {
+        scene.fog = new THREE.FogExp2(0x0A1020, resolutionSettings[currentResolution].fogDensity * 1.5); // Regular night fog
+    }
+    
+    // Adjust lighting for night
+    ambientLight.intensity = 0.2;
+    sunLight.intensity = 0.1;
+    sunLight.color.set(0xC0C0FF); // Moonlight (blueish)
+    fillLight.intensity = 0.1;
+    
+    // Update interior lights
+    scene.traverse((object) => {
+        if (object.isPointLight) {
+            object.intensity = 1.0; // Brighter interior lights at night
+        }
+    });
 }

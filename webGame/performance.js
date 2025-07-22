@@ -31,7 +31,7 @@ class PerformanceMonitor {
         const settingsPanel = document.getElementById('settings-panel');
         const showFpsCheckbox = document.getElementById('show-fps');
         const showPositionCheckbox = document.getElementById('show-position');
-        const nightModeToggle = document.getElementById('night-mode-toggle');
+        const timeModeSelect = document.getElementById('time-mode-select');
         const fullscreenToggle = document.getElementById('fullscreen-toggle');
         const resolutionSelect = document.getElementById('resolution-select');
         const fpsDisplay = document.getElementById('fps');
@@ -62,12 +62,12 @@ class PerformanceMonitor {
             coordinatesDisplay.style.display = this.showPosition ? 'block' : 'none';
         });
         
-        // Handle Night Mode toggle change
-        nightModeToggle.addEventListener('change', () => {
-            const isNightMode = nightModeToggle.checked;
+        // Handle Time Mode select change
+        timeModeSelect.addEventListener('change', () => {
+            const timeMode = timeModeSelect.value;
             
             // Dispatch custom event for game.js to handle
-            const event = new CustomEvent('nightModeToggle', { detail: { isNightMode } });
+            const event = new CustomEvent('timeModeChange', { detail: { timeMode } });
             document.dispatchEvent(event);
         });
         
